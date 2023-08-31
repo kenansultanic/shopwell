@@ -83,5 +83,6 @@ export const suggestRestrictionSchema = yup.object().shape({
 });
 
 export const leaveReviewSchema = yup.object().shape({
-    comment: yup.string()
+    comment: yup.string().required('Required'),
+    rating: yup.number().min(1).max(5).required('Required')
 });

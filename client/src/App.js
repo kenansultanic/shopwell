@@ -1,5 +1,7 @@
 import { BrowserRouter } from 'react-router-dom';
 import {Routes, Route, Navigate} from 'react-router'
+import { gapi } from "gapi-script";
+import jwt_decode from "jwt-decode";
 import SignIn from './pages/signin/SignIn';
 import SignUp from './pages/signup/SignUp';
 import {createTheme, ThemeProvider} from "@mui/material/styles";
@@ -10,6 +12,7 @@ import Header from "./layout/header/Header";
 import Sidebar from "./layout/sidebar/Sidebar";
 import ScanPage from "./pages/product/ScanPage";
 import Overview from "./pages/product/Overview";
+import Overview2 from "./pages/product/Overview2";
 import Profile from "./pages/user/profile/Profile";
 import Index from "./pages/restart-password/Index";
 import RestartPassword from "./pages/restart-password/RestartPassword";
@@ -34,6 +37,10 @@ import ShowResource from "./admin/components/resources/ShowResource";
 import PromotionalEmail from "./admin/pages/PromotionalEmail";
 import NewResource from "./admin/components/resources/NewResource";
 import EditResource from "./admin/components/resources/EditResource";
+import Dashboard from "./admin/pages/Dashboard";
+import {useEffect} from "react";
+import GoogleAuthWrapper from "./common/components/GoogleAuthWrapper";
+import SendNotification from "./admin/pages/SendNotification";
 
 const App = () => {
 
@@ -61,6 +68,30 @@ const App = () => {
     //     },
     //
     // });
+    const clientId = "751064780599-08be9ah5chk34indqkbivnpf916lq45s.apps.googleusercontent.com";
+
+    const handleCallbackResponse = response => {
+        console.log(response.credential)
+        const userObject = jwt_decode(response.credential)
+        console.log(userObject)
+    }
+
+    /*useEffect(() => {
+
+        google.accounts.id.initialize({
+            client_id: clientId,
+            context: "use",
+            use_fedcm_for_prompt: true,
+            callback: handleCallbackResponse
+        });
+        google.accounts.id.prompt();
+
+        google.accounts.id.renderButton(
+            document.getElementById('google-sign-up'),
+            { theme: 'outline', size: 'large' }
+        );
+        //gapi.load('client:auth2', start);
+    }, []);*/
 
     const theme = createCustomTheme('light');
 
@@ -70,9 +101,11 @@ const App = () => {
             <BrowserRouter>
                 <Routes>
                     <Route path="/" element={<Navigate to="/login" />} />
-                    <Route path="login" element={<SignIn />} />
-                    <Route path="register" element={<SignUp />} />
                     <Route path="restart-password" element={<Index />} />
+                    <Route element={<GoogleAuthWrapper />}>
+                        <Route path="login" element={<SignIn />} />
+                        <Route path="register" element={<SignUp />} />
+                    </Route>
                     <Route path="" element={<UserLayout />}>
                         <Route path="user" element={<Main />}>
                             <Route path="profile" element={<RequireAuth />}>
@@ -87,7 +120,8 @@ const App = () => {
                             <Route path="scan" element={<ScanPage />} />
                             <Route path="search" element={<ProductSearchList />} />
                             {/*TODO probaj :code wrapovat u route*/}
-                            <Route path=":code" element={<Overview />} />
+                            <Route path=":code" element={<Overview2 />} />
+                            <Route path=":code/1" element={<Overview />} />
                             <Route path=":code/reviews" element={<Reviews />} />
                             <Route path=":code/leave-review" element={<LeaveReview />} />
                         </Route>
@@ -96,7 +130,7 @@ const App = () => {
                         <Route element={<Menu />}>
                             {/*todo mozda ovo ne treba*/}
                             <Route path="" element={<Navigate to="/admin/dashboard" />} />
-                            <Route path="dashboard" element={<p>nn</p>} />
+                            <Route path="dashboard" element={<Dashboard />} />
                             <Route path="resources" element={<ResourcesContainer />}>
                                 <Route path="" element={<Navigate to="/admin" />} />
                                 <Route path=":resource">
@@ -107,6 +141,7 @@ const App = () => {
                                 </Route>
                             </Route>
                             <Route path="promotional-email" element={<PromotionalEmail />} />
+                            <Route path="send-notification" element={<SendNotification />} />
                         </Route>
                     </Route>
                     <Route path="*" element={<PageNotFound />} />

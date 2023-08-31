@@ -118,7 +118,8 @@ const MenuList = () => {
                           borderLeft: '.125rem solid',
                           borderColor: 'primary.light',
                           width: .7,
-                          m: 'auto'
+                          m: 'auto',
+                          fontSize: 'initial'
                     }}
                 >
                     <StyledListSubItem>

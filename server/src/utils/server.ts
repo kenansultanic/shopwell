@@ -53,8 +53,8 @@ const initializeServer = () => {
     app.use('/admin', adminRouter);
 
     // Todo(ispravi)
-    app.all('*', async (req: Request, res: Response, next: NextFunction) => {
-        return next(new Error('Invalid route'));
+    app.all('*', async (req: Request, res: Response) => {
+        return res.status(404).json({ message: 'Invalid route' });
     });
 
     app.use((err: Error, req: Request, res: Response, next: NextFunction) => {

@@ -13,6 +13,6 @@ router.post('/leave-review/:productID', leaveReview);
 
 router.get('/find-review/:productID/:userID', findReview);
 
-router.delete('/delete-review/:productID/:userID', deleteReview);
+router.delete('/reviews/:id', deleteReview);
 
 export default router;

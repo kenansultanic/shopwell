@@ -14,20 +14,40 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Copyright from '../../common/components/Copyright';
 import {IconButton, InputAdornment} from "@mui/material";
 import {Visibility, VisibilityOff} from "@mui/icons-material";
-import { useState } from "react";
+import {useEffect, useRef, useState} from "react";
 import {useFormik} from "formik";
 import {initialSigninValues, signinSchema} from "../../common/schemas/validationSchema";
 import axios from "../../api/AxiosClient";
 import {useDispatch, useSelector} from "react-redux";
 import {setCredentials} from "../../state/authSlice";
-import {useNavigate} from "react-router";
+import {useNavigate, useOutletContext} from "react-router";
+import {useGoogleLogin, GoogleLogin} from "@react-oauth/google";
+import jwt_decode from "jwt-decode";
+import {login} from "../../actions/users";
 
 const theme = createTheme();
 
 const SignIn = () => {
 
+    const clientId = "751064780599-08be9ah5chk34indqkbivnpf916lq45s.apps.googleusercontent.com";
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
+
+    const googleSignIn = response => {
+        const userObject = jwt_decode(response.credential);
+
+        if (userObject.emailNotVerified)
+            console.error("i ovdje error handler")
+
+        dispatch(login(true, userObject.email))
+            .then(response => console.log(response))
+            .catch(error => console.log(error));
+    };
+
+    const handleGoogleSignInError = error => {
+        //todo dodaj error handler
+    }
 
     const [showPassword, setShowPassword] = useState(false);
 
@@ -43,6 +63,8 @@ const SignIn = () => {
                 throw error;
             });
     }
+
+
 
     const onSubmit = async (values, actions) => {
 
@@ -163,7 +185,7 @@ const SignIn = () => {
                                 error={errors.password && touched.password}
                                 helperText={errors.password && touched.password ? errors.password : ''}
                             />
-                            <FormControlLabel
+                            <FormControlLabel style={{ display: 'block' }}
                                 control={<Checkbox id="rememberMe" name="rememberMe"
                                                    color="primary"
                                                    value={values.rememberMe}
@@ -172,15 +194,24 @@ const SignIn = () => {
                                         />}
                                 label="Remember me"
                             />
-                            <Button
-                                type="submit"
-                                fullWidth
-                                variant="contained"
-                                sx={{ mt: 3, mb: 2 }}
-                                disabled={isSubmitting}
-                            >
-                                Sign In
-                            </Button>
+                            <Box display="flex" flexDirection="column" alignItems="center" marginBottom={2}>
+                                <Button
+                                    type="submit"
+                                    variant="contained"
+                                    sx={{ mt: 3, mb: 2, py: 1, width: '190px', borderRadius: '32px', textTransform: 'none' }}
+                                    disabled={isSubmitting}
+                                >
+                                    Sign In
+                                </Button>
+                                <GoogleLogin
+                                    onSuccess={googleSignIn}
+                                    onError={handleGoogleSignInError}
+                                    width="190px"
+                                    text="signin_with"
+                                    shape="pill"
+                                    theme={'outline'}
+                                />
+                            </Box>
                             <Grid container>
                                 <Grid item xs>
                                     <Link href="/restart-password" variant="body2">
@@ -193,7 +224,7 @@ const SignIn = () => {
                                     </Link>
                                 </Grid>
                             </Grid>
-                            <Copyright sx={{ mt: 4 }} />
+                            <Copyright sx={{ mt: 2 }} />
                         </Box>
                     </Box>
                 </Grid>

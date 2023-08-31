@@ -1,30 +1,35 @@
-import * as api from "../api/admin";
-import { appendUsers } from "../state/dataSlice";
+import * as api from "../api/user";
+import { setUser } from "../state/authSlice";
+import {notificationSchema} from "../admin/common/schemas/formik-schema";
 
-// Todo(proslijedi historiju za login)
-export const getUsers = (page, limit) => async dispatch => {
+export const register = values => async dispatch => {
 
-    try {
-        const { data: { resources: users, total } } = await api.getResources(page, limit, 'users');
+    const response = await api.register(values);
 
-        dispatch(appendUsers({ users }));
-
-        return { total };
+    if (response.status === 201) {
+        const { user, accessToken, refreshToken } = response.data;
+        dispatch(setUser({ user }));
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
     }
-    catch (error) {
-        console.error(error.message);
-    }
+
+    return response;
 };
 
+export const login = (withGoogle, email, password) => async dispatch => {
 
+    let response;
 
-export const getUser = id => async dispatch => {
+    if (withGoogle)
+        response = await api.googleLogin(email);
+    else response = await api.login(email, password);
 
-    const response = await api.getResource(id, 'users');
-    const user = response?.data?.resource;
+    if (response.status === 200) {
+        const { user, accessToken, refreshToken } = response.data;
+        dispatch(setUser({ user }));
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
+    }
 
-    if (!user) return;
-
-    dispatch(appendUsers({ users: [user] }));
+    return response;
 };
-

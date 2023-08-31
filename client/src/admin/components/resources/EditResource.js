@@ -10,7 +10,7 @@ import {CircularProgress, MenuItem} from "@mui/material";
 import { MuiFileInput } from "mui-file-input";
 import {useEffect, useState} from "react";
 import HandleResource from "./HandleResource";
-import {editResource, getResource} from "../../../actions/resources";
+import {editResource, getResource} from "../../actions/resources";
 import {useDispatch, useSelector} from "react-redux";
 import {parseResource} from "../../../util/utils";
 import {getRequiredResourceByID} from "../../common/functions";

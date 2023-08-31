@@ -12,6 +12,7 @@ import {useState} from "react";
 import {saveResource} from "../../../api/admin";
 import {useDispatch} from "react-redux";
 import ClearIcon from '@mui/icons-material/Clear';
+import MultipleInput from "../common/MultipleInput";
 
 const CustomTextField = ({ item, values, errors, touched, status, handleChange, handleBlur, isSelect, children }) => {
 
@@ -68,6 +69,10 @@ const HandleResource = ({ resourceSchema, validationSchema, initialValues, dispa
         enableReinitialize: true
     });
 
+    const setMultipleFieldValue = (value, field) => {
+        setFieldValue(field, value);
+    };
+
     return (
         <>
         <Box
@@ -120,7 +125,7 @@ const HandleResource = ({ resourceSchema, validationSchema, initialValues, dispa
                                     ))
                                 }
                             </CustomTextField>
-                        ) : (
+                        ) : item.type === 'file' ? (
                             <MuiFileInput
                                 fullWidth
                                 required={!id}
@@ -135,6 +140,18 @@ const HandleResource = ({ resourceSchema, validationSchema, initialValues, dispa
                                 onChange={value => setFieldValue('image', value)}
                                 error={!!(errors[item.field] && touched[item.field])}
                                 helperText={(errors[item.field] && touched[item.field] ? errors[item.field] : ' ')}
+                            />
+                        ) : (
+                            <MultipleInput
+                                key={item.field}
+                                fieldName={item.field}
+                                value={values[item.field]}
+                                label={item.headerName}
+                                required={item.required}
+                                error={!!(errors[item.field] && touched[item.field])}
+                                helperText={(errors[item.field] && touched[item.field] ? errors[item.field] : ' ')}
+                                handleBlur={handleBlur}
+                                setMultipleFieldValue={setMultipleFieldValue}
                             />
                         )
                 ))

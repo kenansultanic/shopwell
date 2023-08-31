@@ -1,5 +1,5 @@
-import {getUser, getUsers} from "../../actions/users";
-import {deleteRestrictions, getRestriction, getRestrictions} from "../../actions/restrictions";
+import {getUser, getUsers} from "../actions/users";
+import {deleteRestrictions, getRestriction, getRestrictions} from "../actions/restrictions";
 
 export const getRequiredResourceByID = resource => {
 

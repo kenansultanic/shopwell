@@ -1,5 +1,5 @@
-import * as api from "../api/admin";
-import {appendRestrictions, deleteResources} from "../state/dataSlice";
+import * as api from "../../api/admin";
+import {appendRestrictions, deleteResources} from "../../state/dataSlice";
 
 export const getRestrictions = (page, limit) => async dispatch => {
 

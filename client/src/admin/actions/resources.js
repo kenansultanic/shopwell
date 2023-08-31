@@ -1,5 +1,5 @@
-import * as api from "../api/admin";
-import * as reducers from "../state/dataSlice";
+import * as api from "../../api/admin";
+import * as reducers from "../../state/dataSlice";
 
 
 export const saveResource = (fields, resourceType) => async dispatch => {

@@ -5,12 +5,18 @@ const userAdditions = {
     lastName: yup.string().required('Required'),
     email: yup.string().required('Required'),
     restriction: yup.mixed().oneOf(['allergy', 'religious', 'intolerance']),
+    ingredients: yup.array().of(yup.string()).required('Required')
 };
 
 export const promoEmailSchema = yup.object().shape({
     subject: yup.string().min(5).required('Required'),
     title: yup.string().min(5).required('Required'),
     body: yup.string().min(25).required('Required'),
+});
+
+export const notificationSchema = yup.object().shape({
+    tag: yup.string(),
+    content: yup.string().required('Required')
 });
 
 const newUserSchema = yup.object().shape({
@@ -33,7 +39,8 @@ const initialUserValues = {
     lastName: '',
     email: '',
     restriction: 'allergy',
-    image: null
+    image: null,
+    ingredients: []
 };
 
 const initialRestrictionValues = {

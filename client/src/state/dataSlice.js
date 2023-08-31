@@ -19,6 +19,9 @@ export const dataSlice = createSlice({
         setProductReviews: (state, action) => { state.productReviews = action.payload.productReviews; },
         setRestrictions: (state, action) => { state.restrictions = action.payload.restrictions; },
         appendRestrictions: (state, action) => { state.restrictions = [...state.restrictions, ...action.payload.restrictions]; },
+        setRestrictionSuggestions: (state, action) => { state.restrictionSuggestions = action.payload.restrictionSuggestions; },
+
+
         updateRestriction: (state, action) => {
             const index = state.restrictions.findIndex(item => item._id === action.payload.restriction._id);
             if (index === -1)
@@ -40,7 +43,6 @@ export const dataSlice = createSlice({
             const { IDs, resourceType } = action.payload;
             state[resourceType] = state[resourceType].filter(item => !IDs.includes(item._id))
         },
-        setRestrictionSuggestions: (state, action) => { state.restrictionSuggestions = action.payload.restrictionSuggestions; },
     }
 });
 

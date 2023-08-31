@@ -1,10 +1,12 @@
 import { Router } from "express";
-import { login, newAccesToken, register, restartPassword, sendCode } from "../controllers/auth";
+import { googleLogin, login, newAccesToken, register, restartPassword, sendCode } from "../controllers/auth";
 import { findUserByEmail } from "../middleware/auth";
 
 const router = Router();
 
 router.post('/login', login);
+
+router.post('/google-login', googleLogin);
 
 router.post('/register', register);
 

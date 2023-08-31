@@ -21,7 +21,7 @@ const Sidebar = ({ drawerOpen, drawerToggle }) => {
         <Box component="nav"
              sx={{
                  flexShrink: { md: 0 },
-                 width: matchUpMd ? 270 : 'auto',
+                 width: matchUpMd ? 250 : 'auto',
              }}
              aria-label="sidebar">
             <Drawer
@@ -31,7 +31,7 @@ const Sidebar = ({ drawerOpen, drawerToggle }) => {
                 onClose={drawerToggle}
                 sx={{
                     '& .MuiDrawer-paper': {
-                        width: 280,
+                        width: 250,
                         background: theme.palette.background.default,
                         color: theme.palette.text.primary,
                         borderRight: 'none',

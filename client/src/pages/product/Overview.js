@@ -23,6 +23,8 @@ import backgroundImage1 from "../../images/backgroundImage1.png";
 import backgroundImage2 from "../../images/backgroundImage2.png";
 import List from "@mui/material/List";
 import {NavLink} from "react-router-dom";
+import {useDispatch, useSelector} from "react-redux";
+import {getProduct} from "../../actions/products";
 
 
 const CustomGridItem = styled(Grid)(({ theme }) => ({
@@ -158,13 +160,26 @@ const Overview = () => {
 
     const { code } = useParams();
 
-    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    const productt = useSelector(state => state.data.products.find(item => item.code === code));
 
     const [product, setProduct] = useState(null);
     const [openNutritionalValue, setOpenNutritionalValue] = useState(false);
     const [openIngredientsList, setOpenIngredientsList] = useState(false);
 
     useEffect(() => {
+
+        if (!productt) {
+            dispatch(getProduct(code))
+                .then(response => {
+                    console.info(response)
+                })
+                .catch(error => {
+                    console.error(error)
+                })
+        }
+
         axiosClient.get(`/product/${code}`)
             .then(response => {
                 const { product } = response.data;
@@ -175,6 +190,7 @@ const Overview = () => {
             .catch(error => {
                 if (error.status === 404)
                     setProduct({});
+                console.log(error)
             });
     }, []);
 

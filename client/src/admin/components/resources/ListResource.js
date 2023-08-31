@@ -6,12 +6,12 @@ import { DataGrid } from '@mui/x-data-grid';
 import {useEffect, useRef, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {selectUsers, setUsers} from "../../../state/dataSlice";
-import {getUsers} from "../../../actions/users";
+import {getUsers} from "../../actions/users";
 import {useSearchParams} from "react-router-dom";
 import {useParams} from "react-router";
 import {getListResourceSchema} from "../../common/schemas/list-resource-schema";
 import {deleteRequiredResources, getRequiredResources} from "../../common/functions";
-import {deleteResources, getResources} from "../../../actions/resources";
+import {deleteResources, getResources} from "../../actions/resources";
 
 const ListResource = () => {
 
@@ -42,7 +42,6 @@ const ListResource = () => {
     };
 
     const deleteAllSelected = () => {
-        console.log(selectedRows)
         dispatch(deleteResources(selectedRows, resource))
             .then(response => console.log("res",response))
             .catch(error => console.error(error))
@@ -53,6 +52,7 @@ const ListResource = () => {
     }, [users]);*/
 
     useEffect(() => {
+        //TODO izbrisi try catch
         try {
             if (renderAfterCalled.current)
                 renderAfterCalled.current = false;

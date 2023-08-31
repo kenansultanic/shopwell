@@ -6,7 +6,7 @@ import {useParams} from "react-router";
 import {useDispatch, useSelector} from "react-redux";
 import {parseResource} from "../../../util/utils";
 import {useEffect, useState} from "react";
-import {getResource} from "../../../actions/resources";
+import {getResource} from "../../actions/resources";
 import {getRequiredResourceByID} from "../../common/functions";
 import Paper from "@mui/material/Paper";
 import {getShowResourceSchema} from "../../common/schemas/show-resource-schema";

@@ -5,6 +5,7 @@ const userSchema = [
     { field: 'lastName', headerName: 'Last Name', type: 'string', required: true },
     { field: 'image', headerName: 'Image', type: 'file', required: true, value: null },
     { field: 'email', headerName: 'Email', type: 'string', required: true, multiline: true },
+    { field: 'ingredients', headerName: 'Ingredients', type: 'multiple-string', required: true},
     { field: 'restriction', headerName: 'Restriction', type: 'enum', required: true,
         options: [
             { value: 'allergy', label: 'Allergy' },

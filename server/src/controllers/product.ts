@@ -58,7 +58,7 @@ export const getReviews = async (req: Request, res: Response) => {
         const total = await ProductReview.countDocuments({ productID }); // Total number of reviews
 
         const reviews = await ProductReview.find({ productID }).sort({ _id: -1 }).limit(LIMIT).skip(startIndex);
-
+        
         res.status(200).json({ reviews, total: Math.ceil(total / LIMIT) });
     }
     catch (error) {
@@ -109,10 +109,10 @@ export const findReview = async (req: Request, res: Response) => {
 
 export const deleteReview = async (req: Request, res: Response) => {
 
-    const { productID, userID } = req.params;
+    const { id: _id } = req.params;
 
     try {
-        const deletedReview = await ProductReview.deleteOne({ productID, userID });
+        const deletedReview = await ProductReview.deleteOne({ _id });
 
         if (!deletedReview)
             return res.status(400).json({ message: 'Could not delete review' });

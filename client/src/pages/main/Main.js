@@ -18,12 +18,14 @@ const Main = () => {
                 sx={{
                     position: 'relative',
                     top: '54px',
-                    left: drawerOpen ? '270px' : 0,
-                    width: drawerOpen ? 'calc(100vw - 270px)' : '100%',
+                    left: drawerOpen ? '250px' : 0,
+                    width: drawerOpen ? 'calc(100vw - 250px)' : '100%',
                     height: 'calc(100vh - 56px)',
                     px: 2,
                     pt: 4,
                     transition: 'width .3s',
+                    overflowX: 'hidden',
+                    boxSizing: 'border-box'
                 }}
             >
                 <Paper
@@ -33,9 +35,9 @@ const Main = () => {
                         minHeight: '100%',
                         borderRadius: '16px 16px 0 0',
                         bgcolor: 'primary.light',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
+                        //display: 'flex',
+                        //alignItems: 'center',
+                        //justifyContent: 'center',
                     }}
                 >
                     <Outlet />

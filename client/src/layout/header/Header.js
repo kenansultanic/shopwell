@@ -9,6 +9,7 @@ import { IconMenu2 } from '@tabler/icons';
 import Logo from "../../common/components/Logo";
 import Search from "./search/Search";
 import {useState} from "react";
+import NotificationSection from "./notifications/NotificationSection";
 
 const Header = ({ drawerToggle }) => {
 
@@ -40,7 +41,7 @@ const Header = ({ drawerToggle }) => {
                         <Box component="span" sx={{ display: { xs: 'none', md: 'block' }, flexGrow: 1 }}>
                             <Logo />
                         </Box>
-                        <ButtonBase sx={{ borderRadius: 3, overflow: 'hidden' }}>
+                        <ButtonBase sx={{ overflow: 'hidden', borderRadius: 3,  }}>
                             <Avatar
                                 variant="rounded"
                                 sx={{
@@ -50,6 +51,7 @@ const Header = ({ drawerToggle }) => {
                                     width: '34px',
                                     height: '34px',
                                     margin: .5,
+                                    borderRadius: 2.5,
                                     '&:hover': {
                                         bgcolor: 'secondary.dark',
                                         color: 'secondary.light'
@@ -62,8 +64,8 @@ const Header = ({ drawerToggle }) => {
                         </ButtonBase>
                         <ButtonBase
                             sx={{
-                                borderRadius: 3,
                                 overflow: 'hidden',
+                                borderRadius: 2.5,
                                 display: {
                                     sm: 'inline',
                                     md: 'none'
@@ -79,6 +81,7 @@ const Header = ({ drawerToggle }) => {
                                     width: '34px',
                                     height: '34px',
                                     margin: .5,
+                                    borderRadius: 2.5,
                                     '&:hover': {
                                         bgcolor: 'secondary.dark',
                                         color: 'secondary.light'
@@ -93,6 +96,7 @@ const Header = ({ drawerToggle }) => {
                     <Box flexGrow={.3}/>
                     <Search display={displaySearchInMobile} />
                     <Box flexGrow={.7}/>
+                    <NotificationSection />
                     <ProfileSection />
                 </Toolbar>
             </AppBar>

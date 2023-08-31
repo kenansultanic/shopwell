@@ -7,22 +7,31 @@ import { sendRestartCode } from "../utils/emails/email";
 
 export const register = async (req: Request, res: Response) => {
 
-    const { email, firstName, lastName, password, allowExtraEmails } = req.body;
+    const { withGoogle, email, firstName, lastName, password, allowExtraEmails, picture } = req.body;
 
     //const salt = await bcrypt.genSalt();
     //const passwordHash = await bcrypt.hash(password, salt);
 
-    const user = new User({
-        email,
-        firstName,
-        lastName,
-        allowExtraEmails,
-        password
-    });
+    if (!email || !firstName || !lastName || (!withGoogle && !password))
+        return res.status(422).json({ message: 'Missing one or more required parameters' });
+
+    let userFields: {};
+
+    if (withGoogle)
+        userFields = { email, firstName, lastName, picture };
+    else userFields = { email, firstName, lastName, password, allowExtraEmails };
+
+    const user = new User({ ...userFields });
 
     try {
         const newUser = await user.save();
-        res.status(201).json({ user: newUser });
+
+        const accessToken = jwt.sign({ ...newUser }, process.env.JWT_SECRET!, { expiresIn: '30m' });
+        const refreshToken = jwt.sign({ ...newUser }, process.env.JWT_SECRET!, { expiresIn: '5d' });
+
+        res.cookie('user', newUser, { httpOnly: true, secure: true, sameSite: 'none', maxAge: 5*24*60*60*1000 });
+
+        res.status(201).json({ user: newUser, accessToken, refreshToken });
     }
     catch (error) {
 
@@ -58,6 +67,35 @@ export const login = async (req: Request, res: Response) => {
 
         if (!isMatch)
             return res.status(400).json({ message: 'Invalid password' });
+
+        user.password = 'null';
+
+        const accessToken = jwt.sign({ ...user }, process.env.JWT_SECRET!, { expiresIn: '30m' });
+        const refreshToken = jwt.sign({ ...user }, process.env.JWT_SECRET!, { expiresIn: '5d' });
+
+        res.cookie('user', user, { httpOnly: true, secure: true, sameSite: 'none', maxAge: 5*24*60*60*1000 });
+        res.status(200).json({ accessToken, refreshToken, user });
+    }
+    catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+export const googleLogin = async (req: Request, res: Response) => {
+    
+    const { email } = req.body;
+
+    if (!email)
+        return res.status(422).json({ message: 'Missing email'});
+
+    if (typeof email !== 'string')
+        return res.status(422).json({ message: 'Email must be of type string' });
+
+    try {
+        const user = await User.findOne({ email }).lean();
+        
+        if (!user)
+            return res.status(400).json({ message: 'User does not exist' });
 
         user.password = 'null';
 

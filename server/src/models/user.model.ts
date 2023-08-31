@@ -6,6 +6,7 @@ export interface UserDocument extends mongoose.Document {
     firstName: string,
     lastName: string,
     password: string,
+    picture?: string,
     allowExtraEmails: boolean,
     dietaryReatrictions: {
         allergies: string[],
@@ -34,11 +35,14 @@ const UserSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true,
+        //required: true,
         validate: {
             validator: (v: string) => /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{5,}$/.test(v),
             message: 'Password too weak'
         }
+    },
+    picture: {
+        type: String
     },
     allowExtraEmails: {
         type: Boolean,

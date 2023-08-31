@@ -9,7 +9,7 @@ import TextField from "@mui/material/TextField";
 import {Box, CircularProgress, MenuItem, Typography} from "@mui/material";
 import { MuiFileInput } from "mui-file-input";
 import {useEffect, useState} from "react";
-import { saveResource } from "../../../actions/resources";
+import { saveResource } from "../../actions/resources";
 import CustomResourceTextField from "../common/CustomResourceTextField";
 import AddIcon from "@mui/icons-material/Add";
 import {useDispatch, useSelector} from "react-redux";
