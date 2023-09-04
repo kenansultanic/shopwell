@@ -1,7 +1,7 @@
 import Paper from "@mui/material/Paper";
 import {useFormik} from "formik";
 import {getValidationSchema} from "../../common/schemas/formik-schema";
-import {useParams} from "react-router";
+import {useNavigate, useParams} from "react-router";
 import {getNewResourceSchema} from "../../common/schemas/new-resource-schema";
 import StyledTextField from "../common/StyledTextField";
 import Button from "@mui/material/Button";
@@ -48,29 +48,42 @@ const HandleResource = ({ resourceSchema, validationSchema, initialValues, dispa
     const { resource, id } = useParams();
 
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const onSubmit = async (values, actions) => {
-
-            dispatch(dispatchCall(values, resource, id))
-                .then(response => {
-                    console.log(response)
-                    actions.resetForm();
-                })
-                .catch(error => {
-                    console.error(error);
-                });
-
+        dispatch(dispatchCall(values, resource, id))
+            .then(response => {
+                console.log(response.data)
+                actions.resetForm();
+            })
+            .catch(error => {
+                console.error(error);
+            });
     };
 
-    const { values, errors, touched, status, isSubmitting, handleChange, handleBlur, handleSubmit, setFieldValue } = useFormik({
+    const { values, errors, touched, status, isSubmitting, handleChange, handleBlur, handleSubmit, setFieldValue, resetForm } = useFormik({
         initialValues,
         validationSchema,
         onSubmit,
         enableReinitialize: true
     });
+    console.log(errors)
 
     const setMultipleFieldValue = (value, field) => {
-        setFieldValue(field, value);
+        if (field === 'nutritionalValuePer100grams') {
+            const parsedValues = [];
+            value.forEach(item => {
+                const parsedValue = item.split(' ');
+                parsedValues.push({ name: parsedValue[0], value: Number(parsedValue[1]) });
+            });
+            setFieldValue('nutritionalValuePer100grams', parsedValues);
+        }
+        else setFieldValue(field, value);
+    };
+
+    const handleCancelButtonClick = () => {
+      navigate(-1);
+      resetForm();
     };
 
     return (
@@ -85,7 +98,7 @@ const HandleResource = ({ resourceSchema, validationSchema, initialValues, dispa
         >
             <Typography variant="h5" textTransform="capitalize">{ resource }</Typography>
             <Box style={{ flexGrow: 1 }}/>
-            <Button variant="outlined" color="warning" style={{ textTransform: 'none' }}>
+            <Button variant="outlined" color="warning" style={{ textTransform: 'none' }} onClick={handleCancelButtonClick}>
                 <ClearIcon fontSize="small" /> &nbsp; Cancel
             </Button>
         </Box>
@@ -125,7 +138,7 @@ const HandleResource = ({ resourceSchema, validationSchema, initialValues, dispa
                                     ))
                                 }
                             </CustomTextField>
-                        ) : item.type === 'file' ? (
+                        ) : item.type === 'image' ? (
                             <MuiFileInput
                                 fullWidth
                                 required={!id}
@@ -141,7 +154,7 @@ const HandleResource = ({ resourceSchema, validationSchema, initialValues, dispa
                                 error={!!(errors[item.field] && touched[item.field])}
                                 helperText={(errors[item.field] && touched[item.field] ? errors[item.field] : ' ')}
                             />
-                        ) : (
+                        ) : item.type === 'multiple-string' ? (
                             <MultipleInput
                                 key={item.field}
                                 fieldName={item.field}
@@ -153,7 +166,7 @@ const HandleResource = ({ resourceSchema, validationSchema, initialValues, dispa
                                 handleBlur={handleBlur}
                                 setMultipleFieldValue={setMultipleFieldValue}
                             />
-                        )
+                        ) : undefined
                 ))
             }
             <Button

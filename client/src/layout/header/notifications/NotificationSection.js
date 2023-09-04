@@ -59,7 +59,6 @@ const NotificationSection = () => {
     }
 
     useEffect(() => {
-
         if (renderAfterCalled) {
             renderAfterCalled.current = false;
         }

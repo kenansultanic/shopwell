@@ -25,17 +25,17 @@ const SendNotification = () => {
 
     return (
         <Box style={{ padding: '0 10px', margin: 'auto', marginTop: '20px' }}>
-            <Typography variant="h5">Send Promotional Email</Typography>
+            <Typography variant="h5">Send Notification to users</Typography>>
             <Paper component="form" noValidate onSubmit={handleSubmit}
                    sx={{ mt: 6, p: 3, '.MuiFormControl-root': { my: '10px' } }}
             >
                 <TextField
+                    autoFocus
                     fullWidth
                     id="tag"
                     name="tag"
                     label="Tag"
                     size="small"
-                    autoFocus
                     value={values.tag}
                     onChange={handleChange}
                     onBlur={handleBlur}
@@ -45,10 +45,12 @@ const SendNotification = () => {
                 <TextField
                     required
                     fullWidth
+                    multiline
                     id="content"
                     name="content"
                     label="Content"
                     size="small"
+                    minRows={3}
                     value={values.content}
                     onChange={handleChange}
                     onBlur={handleBlur}

@@ -52,10 +52,10 @@ export const findUserByEmail = async (req: Request, res: Response, next: NextFun
 
 export const verifyAdmin = async (req: Request, res: Response, next: NextFunction) => {
 
-    const { user } = req.user;
+    //const { user } = req.user;
     //console.log(req.user)
     // Checks if the decoded JWT belongs to an admin
-    if (!user?.isAdmin)
+    if (!req.user?.isAdmin)
         return res.sendStatus(403);
 
     next();

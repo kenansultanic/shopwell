@@ -5,13 +5,11 @@ import { Navigate, Outlet } from "react-router";
 const AdminLayout = () => {
 
     const user = useSelector(selectCurrentUser);
-    console.log(user)
 
     return (
-        //TODO(izmjeni u ===)
-        user.type !== 'admin'
+        user?.isAdmin
             ? <Outlet />
-            : <Navigate to="./login" />
+            : <Navigate to="../login" />
     );
 };
 

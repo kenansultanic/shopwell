@@ -1,13 +1,20 @@
 import {Grid, Typography, Box} from "@mui/material";
 import BarcodeScanner from "../../common/components/BarcodeScanner";
 import {useNavigate} from "react-router";
+import {io} from "socket.io-client";
+
+const socket = io.connect('http://localhost:4000');
 
 const ScanPage = () => {
 
     const navigate = useNavigate();
 
     const onNewScanResult = (decodedText, decodedResult) => {
-        console.log(decodedText)
+
+        // TODO testiraj
+        socket.emit("register_scan", { date: new Date().toDateString() });
+
+        console.log(decodedText);
         navigate(`/product/${decodedText}`);
     };
 

@@ -8,11 +8,12 @@ import TextField from "@mui/material/TextField";
 
 
 
-const MultipleInput = ({ value=[], setMultipleFieldValue, fieldName, label, required, error, helperText, handleBlur }) => {
+const NutritionalValueInput = ({ value=[], setMultipleFieldValue, fieldName, label, required, error, helperText, handleBlur }) => {
 
     const [values, setValues] = useState([...value]);
     const [currentValue, setCurrentValue] = useState('');
-    /*const handleKeyPress = event => {
+
+    const handleKeyPress = event => {
 
         const newValue = event.target.value.trim();
 
@@ -25,14 +26,13 @@ const MultipleInput = ({ value=[], setMultipleFieldValue, fieldName, label, requ
             setMultipleFieldValue([...newValues], fieldName);
             setCurrentValue('');
         }
-    };*/
+    };
 
     const handleAddButton = newValue => {
         if (values.includes(newValue))
             return;
-        const arr = [...values, newValue];
+
         setValues([...values, newValue]);
-        setMultipleFieldValue([...arr], fieldName);
         setCurrentValue('');
     };
 
@@ -59,7 +59,7 @@ const MultipleInput = ({ value=[], setMultipleFieldValue, fieldName, label, requ
                     border: '2px solid lightgray',
                     padding: 4,
                     borderRadius: '4px',
-            }}>
+                }}>
                 <Box
                     sx={{
                         gap: '8px',
@@ -74,7 +74,6 @@ const MultipleInput = ({ value=[], setMultipleFieldValue, fieldName, label, requ
                     )) }
                 </Box>
                 <TextField
-                    fullWidth
                     variant="standard"
                     margin="normal"
                     label={label}
@@ -83,6 +82,34 @@ const MultipleInput = ({ value=[], setMultipleFieldValue, fieldName, label, requ
                     id={fieldName}
                     required={required}
                     onChange={handleChange}
+                    onKeyDown={handleKeyPress}
+                    onBlur={handleBlur}
+                    error={error}
+                    helperText={helperText}
+                    InputProps={{
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <IconButton
+                                    edge="end"
+                                    onClick={() => handleAddButton(currentValue)}
+                                    style={{ margin: '0 8px', fontSize: 'small' }}
+                                >
+                                    Add
+                                </IconButton>
+                            </InputAdornment>
+                        )
+                    }}
+                />
+                <TextField
+                    variant="standard"
+                    margin="normal"
+                    label={label}
+                    value={currentValue}
+                    name={fieldName}
+                    id={fieldName}
+                    required={required}
+                    onChange={handleChange}
+                    onKeyDown={handleKeyPress}
                     onBlur={handleBlur}
                     error={error}
                     helperText={helperText}
@@ -105,4 +132,4 @@ const MultipleInput = ({ value=[], setMultipleFieldValue, fieldName, label, requ
     );
 };
 
-export default MultipleInput;
+export default NutritionalValueInput;

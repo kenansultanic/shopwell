@@ -18,7 +18,7 @@ export const leaveReview = (code, userID, rating, comment, name) => async dispat
     const response = await api.leaveReview(code, userID, rating, comment, name);
     const review = response.data.newReview;
 
-    dispatch(appendResources({ resources: [review], resourceType: 'productReviews' }));
+    dispatch(appendResources({ resources: [review], resourceType: 'product-reviews' }));
 
     return response;
 };
@@ -28,7 +28,7 @@ export const getReviews = (code, page) => async dispatch => {
     const response = await api.getReviews(code, page);
     const { reviews: resources } = response.data;
 
-    dispatch(appendResources({ resources, resourceType: 'productReviews' }));
+    dispatch(appendResources({ resources, resourceType: 'product-reviews' }));
 
     return response;
 };
@@ -38,7 +38,7 @@ export const deleteReview = id => async dispatch => {
     const response = await api.deleteReview(id);
 
     if (response.status === 200)
-        dispatch(deleteResources({ IDs: [id], resourceType: 'productReviews' }));
+        dispatch(deleteResources({ IDs: [id], resourceType: 'product-reviews' }));
 
     return response;
 };

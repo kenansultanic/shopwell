@@ -5,14 +5,13 @@ import Product, { ProductDocument } from "../models/product.model";
 import ProductReview, { ProductReviewDocument } from "../models/productReview.model";
 import RestrictionSuggestion, { RestrictionSuggestionDocument } from "../models/restrictions/restrictionSuggestion.model";
 import Restriction, { RestrictionDocument } from "../models/restrictions/restriction.model";
-import Allergy from "../models/restrictions/allergy.model";
-import Religious from "../models/restrictions/religious.model";
-import Intolerance from "../models/restrictions/intolerance.model";
 import { Model } from "mongoose";
 import { dataUriFormatter, getResourceModel } from "../utils/functions";
 import { sendPromoEmails as sendEmails } from "../utils/emails/email";
 import uploadImage from "../utils/cloudinary";
 import { UploadedFile } from "adminjs";
+import ScansPerDay from "../models/scans-per-day.model";
+import Activity from "../models/activity.model";
 
 //type MongooseModel = Model<UserDocument | ProductDocument | ProductReviewDocument | RestrictionDocument | RestrictionSuggestionDocument> | null;
 
@@ -29,6 +28,34 @@ type MongooseModel =
   | RestrictionMongooseModel
   | RestrictionSuggestionMongooseModel
   | null;
+
+
+export const getStatistics = async (req: Request, res: Response) => {
+
+    try {
+        const scansPerDay = await ScansPerDay.find({}).sort({ date: 1 }).limit(7);
+        const recentActivity = await Activity.find({}).sort({ timestampOfAction: -1 }).limit(5);
+        const numberOfUsers = await User.count({});
+        const numberOfProducts = await Product.count({});
+        /*const saveee = new Activity({
+            actionType: "insert",
+            collectionName: "mcdak",
+            timestampOfAction: new Date(),
+            fullDocument: {k:1}
+        })
+
+        const kk =  await saveee.save();
+        console.log(kk)*/
+
+        if (!scansPerDay || !recentActivity || !numberOfUsers || !numberOfProducts)
+            res.status(400).json({ message: 'Could not retreive data' });
+
+        res.status(200).json({ scansPerDay, recentActivity, numberOfUsers, numberOfProducts });
+    }
+    catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
 
 export const getUsers = async (req: Request, res: Response) => {
     
@@ -47,19 +74,38 @@ export const getUsers = async (req: Request, res: Response) => {
     }
 };
 
-export const getResources = async (req: Request, res: Response) => {
+export const getNumberOfResourceDocuments = async (req: Request, res: Response) => {
 
     const { resourceType } = req.params;
-    const { page, limit, loaded } = req.query;
 
     try {
-        let model: any = getResourceModel(resourceType);
+        const model: any = getResourceModel(resourceType);
     
         if (!model)
             return res.status(404).json({ message: 'Requested resource doesn\'t exist' });
     
         const total = await model.countDocuments({});    
-        const resources = await model.find({}).sort({ _id: -1 }).limit(Number(limit)).skip(Number(loaded));
+
+        res.status(200).json({ total });
+    }
+    catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+export const getResources = async (req: Request, res: Response) => {
+
+    const { resourceType } = req.params;
+    const { page, limit } = req.query;
+
+    try {
+        const model: any = getResourceModel(resourceType);
+    
+        if (!model)
+            return res.status(404).json({ message: 'Requested resource doesn\'t exist' });
+    
+        const total = await model.countDocuments({});    
+        const resources = await model.find({}).sort({ _id: -1 }).limit(Number(limit)).skip(Number(limit) * Number(page));
 
         res.status(200).json({ resources, total: Math.ceil(total / Number(limit)) });
     }
@@ -96,13 +142,13 @@ export const getResource = async (req: Request, res: Response) => {
 export const saveResource = async (req: Request, res: Response) => {
     
     const { resourceType } = req.params;
+    const values = JSON.parse(req.body.values);
 
     try {
         const ResourceModel: MongooseModel = getResourceModel(resourceType);
 
         if (!ResourceModel)
             return res.status(404).json({ message: 'Requested resource doesn\'t exist' });
-
 
         let uploaded_image: any;
 
@@ -118,9 +164,9 @@ export const saveResource = async (req: Request, res: Response) => {
         }
 
         if (uploaded_image)
-            req.body.imageURL = uploaded_image.secure_url;
+            values.imageURL = uploaded_image.secure_url;
 
-        const resource = new ResourceModel({ ...req.body })    
+        const resource = new ResourceModel({ ...values })    
         const newResource = await resource.save();
 
         res.status(201).json({ resource: newResource });
@@ -133,15 +179,32 @@ export const saveResource = async (req: Request, res: Response) => {
 export const editResource = async (req: Request, res: Response) => {
 
     const { resourceType, id } = req.params;
+    const values = JSON.parse(req.body.values);
 
     try {
         const ResourceModel: MongooseModel = getResourceModel(resourceType);
 
         if (!ResourceModel)
-            return res.status(404).json({ message: 'Requested resource doesn\'t exist' });//ili 304 not modified
+            return res.status(404).json({ message: 'Requested resource doesn\'t exist' });
+
+        let uploaded_image: any;
+
+        if (req.files?.image) {
+
+            // @ts-ignore
+            const file = dataUriFormatter(req.files.image?.name, req.files.image?.data);
+
+            if (!file)
+                return res.status(510).json({ error: 'Server could not upload image' });
+
+            uploaded_image = await uploadImage(file);
+        }
+
+        if (uploaded_image)
+            values.imageURL = uploaded_image.secure_url;
 
         // @ts-ignore    
-        const resource = await ResourceModel.findOneAndUpdate({ _id: id }, { $set: { ...req.body } }, { new: true });
+        const resource = await ResourceModel.findOneAndUpdate({ _id: id }, { $set: { ...values } }, { new: true });
 
         if (!resource)
             return res.status(404).json({ message: 'No item with that id exists' });

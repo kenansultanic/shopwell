@@ -9,7 +9,7 @@ describe('auth', () => {
 
     beforeAll(async () =>  {
         const mongoServer = await MongoMemoryServer.create();
-
+        console.log(mongoServer.getUri())
         await mongoose.connect(mongoServer.getUri());
     });
 
@@ -25,7 +25,7 @@ describe('auth', () => {
                 email: 'test@email.com',
                 firstName: 'test',
                 lastName: 'test',
-                password: 'password',
+                password: 'Password123',
                 allowExtraEmails: true
             };
             
@@ -37,11 +37,11 @@ describe('auth', () => {
                             .expect(201);
         });
 
-        it('should return te logged in user',async () => {
+        it('should return te logged in user', async () => {
             
-            const payload = { email: 'test@email.com', password: 'password' };
+            const payload = { email: 'test@email.com', password: 'Password123' };
 
-            await supertest(app).get('/auth/login').query(payload).expect(200)
+            await supertest(app).post('/auth/login').send(payload).expect(200)
         });
     });
     /*it('should work', async () => {

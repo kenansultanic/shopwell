@@ -1,15 +1,13 @@
-import {Box, Grid, Pagination, Rating, Typography, CircularProgress} from "@mui/material";
+import {Box, Grid, Rating, Typography, CircularProgress} from "@mui/material";
 import {useEffect, useRef, useState} from "react";
-import {axiosClient} from "../../api/AxiosClient";
 import {useNavigate, useParams} from "react-router";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import {useFormik} from "formik";
 import {leaveReviewSchema} from "../../common/schemas/validationSchema";
 import {useDispatch, useSelector} from "react-redux";
-import {selectCurrentUser} from "../../state/authSlice";
+import {selectCurrentUser, setError} from "../../state/authSlice";
 import {deleteReview, getReviews, leaveReview} from "../../actions/products";
-import {useSearchParams} from "react-router-dom";
 import {timePassed} from "../../util/utils";
 
 
@@ -64,14 +62,12 @@ const Reviews = () => {
     const dispatch = useDispatch();
 
     const { _id: userID, firstName, lastName } = useSelector(selectCurrentUser);
-    const reviews = useSelector(state => state.data.productReviews.filter(
+    const reviews = useSelector(state => state.data['product-reviews'].filter(
         review => review.productID === code && review.userID !== userID
     ));
-    const [userReview]= useSelector(state => state.data.productReviews.filter(review => review.userID === userID));
+    const [userReview]= useSelector(state => state.data['product-reviews'].filter(review => review.userID === userID));
 
     const renderAfterCalled = useRef(false);
-
-    const [previousReview, setPreviousReview] = useState(null);
 
     const [totalPages, setTotalPages] = useState(1);
     const [isLoading, setIsLoading] = useState(false);
@@ -79,11 +75,6 @@ const Reviews = () => {
     const [page, setPage] = useState(1);
 
     useEffect(() => {
-        /*axiosClient.get(`/product/reviews/${code}?page=${page}`)
-            .then(response => {
-                setTotalPages(response.data.total);
-                //setReviews(response.data.reviews);
-            })*/
 
         if (renderAfterCalled.current) {
             renderAfterCalled.current = false;
@@ -98,7 +89,7 @@ const Reviews = () => {
                     setTotalPages(response.data.total);
                 })
                 .catch(error => {
-                    console.error(error);
+                    dispatch(setError({ error: error.message ?? 'Could not log in' }));
                 });
 
     }, [page]);
@@ -125,7 +116,6 @@ const Reviews = () => {
 
         dispatch(leaveReview(code, userID, rating, comment, name))
         .then(response => {
-            //navigate(`/product/${code}/reviews`)
             console.log(response)
             actions.resetForm();
         })
@@ -151,7 +141,7 @@ const Reviews = () => {
         >
             <Typography variant="h5" fontWeight="800">Reviews</Typography>
             {
-                !userReview ? (
+                !userReview && userID ? (
                     <Box
                         noValidate
                         component="form"
@@ -230,38 +220,6 @@ const Reviews = () => {
                         )
                 )
             }
-
-
-            {/*
-                reviews ?
-                    <>
-                    {
-                        totalPages > 0 ?
-                        <>
-                            {
-                                reviews.map(review => (
-                                    <Review review={review} key={review._id} />
-                                ))
-                            }
-                            <Grid item sm={12} md={10} lg={7} style={{ display: 'flex', justifyContent: 'center' }}>
-                                <Pagination count={totalPages} page={page} onChange={handlePaginate} />
-                            </Grid>
-                        </>
-                        : (
-                            <Grid item style={{ textAlign: 'center' }}>
-                                <Typography sx={{ color: 'secondary.dark' }}>
-                                        This product does not have any reviews yet
-                                </Typography>
-                            </Grid>
-                        )
-                    }
-                    </>
-                    : (
-                        <Grid item style={{ textAlign: 'center' }}>
-                            <CircularProgress />
-                        </Grid>
-                    )
-            */}
             <Box>
                 {
                     page < totalPages && (

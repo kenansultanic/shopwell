@@ -27,15 +27,22 @@ import {
     ListSubheader,
     Popper
 } from "@mui/material";
-import DashboardIcon from "@mui/icons-material/Dashboard";
 import LightModeIcon from '@mui/icons-material/LightMode';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import PersonIcon from '@mui/icons-material/Person';
+import InventoryIcon from '@mui/icons-material/Inventory';
+import BlockIcon from '@mui/icons-material/Block';
+import ReviewsIcon from '@mui/icons-material/Reviews';
+import EmailIcon from '@mui/icons-material/Email';
+import NotificationAddIcon from '@mui/icons-material/NotificationAdd';
 import {NavLink} from "react-router-dom";
 import {ExpandLess as ExpandLessIcon, ExpandMore as ExpandMoreIcon} from "@mui/icons-material";
 import {useRef, useState} from "react";
 import {Outlet} from "react-router";
 import Button from "@mui/material/Button";
+import {useDispatch, useSelector} from "react-redux";
+import {logout, selectThemeMode, updateMode} from "../../../state/authSlice";
 
 const StyledListItemButton = styled(ListItemButton)(({ theme }) => ({
     '&.active, :hover': {
@@ -58,128 +65,58 @@ const MainListItems = ({ isOpen }) => {
 
     return (
         <>
-            <StyledListItemButton component={NavLink} to="/admin">
+            <StyledListItemButton component={NavLink} to="/admin/dashboard">
                 <ListItemIcon>
-                    <DashboardIcon/>
+                    <DashboardIcon />
                 </ListItemIcon>
-                <ListItemText primary="Dashboard"/>
+                <ListItemText primary="Dashboard" />
             </StyledListItemButton>
             <ListSubheader component="div" inset style={{ ...(isOpen && { paddingLeft: '12px' }) }}>
                 Resources
             </ListSubheader>
-            <StyledListItemButton>
+            <StyledListItemButton component={NavLink} to="/admin/resources/users/list?page=1">
                 <ListItemIcon>
-                    <DashboardIcon/>
+                    <PersonIcon />
                 </ListItemIcon>
-                <ListItemText primary="Users"/>
+                <ListItemText primary="Users" />
             </StyledListItemButton>
-            <StyledListItemButton>
+            <StyledListItemButton component={NavLink} to="/admin/resources/products/list?page=1">
                 <ListItemIcon>
-                    <DashboardIcon/>
+                    <InventoryIcon />
                 </ListItemIcon>
-                <ListItemText primary="Products"/>
+                <ListItemText primary="Products" />
             </StyledListItemButton>
-            <StyledListItemButton>
+            <StyledListItemButton component={NavLink} to="/admin/resources/restrictions/list?page=1">
                 <ListItemIcon>
-                    <DashboardIcon/>
+                    <BlockIcon />
                 </ListItemIcon>
-                <ListItemText primary="Restrictions"/>
-                {/*<ListItemIcon sx={{ 'svg': { ml: 2 } }}>*/}
-                {/*    { isOpen ? <ExpandLessIcon/> : <ExpandMoreIcon/> }*/}
-                {/*</ListItemIcon>*/}
+                <ListItemText primary="Restrictions" />
             </StyledListItemButton>
-            {/*<Collapse in={isOpen} timeout="auto" unmountOnExit>
-                <List component="div" disablePadding sx={{ width: '80%', margin: 'auto' }}>
-                    <StyledListItemButton>
-                        <ListItemIcon sx={{ mr: 1, minWidth: '5px' }}>
-                            <>&#9679;</>
-                        </ListItemIcon>
-                        <ListItemText primary="Allergies"/>
-                    </StyledListItemButton>
-                    <StyledListItemButton>
-                        <ListItemIcon sx={{ mr: 1, minWidth: '5px '}}>
-                            <>&#9679;</>
-                        </ListItemIcon>
-                        <ListItemText primary="Religious"/>
-                    </StyledListItemButton>
-                    <StyledListItemButton>
-                        <ListItemIcon sx={{ mr: 1, minWidth: '5px' }}>
-                            <>&#9679;</>
-                        </ListItemIcon>
-                        <ListItemText primary="Intolerances"/>
-                    </StyledListItemButton>
-                </List>
-            </Collapse>*/}
-            <StyledListItemButton>
+            <StyledListItemButton component={NavLink} to="/admin/resources/product-reviews/list?page=1">
                 <ListItemIcon>
-                    <DashboardIcon/>
+                    <ReviewsIcon />
                 </ListItemIcon>
-                <ListItemText primary="Product reviews"/>
+                <ListItemText primary="Product reviews" />
             </StyledListItemButton>
             <Divider sx={{ my: 1 }} />
             <ListSubheader component="div" inset style={{ ...(isOpen && { paddingLeft: '12px' }) }}>
-                Saved reports
+                Pages
             </ListSubheader>
-            <StyledListItemButton>
+            <StyledListItemButton component={NavLink} to="/admin/promotional-email">
                 <ListItemIcon>
-                    <DashboardIcon />
+                    <EmailIcon />
                 </ListItemIcon>
-                <ListItemText primary="Current month" />
+                <ListItemText primary="Send emails" />
             </StyledListItemButton>
-            <StyledListItemButton>
+            <StyledListItemButton component={NavLink} to="/admin/send-notification">
                 <ListItemIcon>
-                    <DashboardIcon />
+                    <NotificationAddIcon />
                 </ListItemIcon>
-                <ListItemText primary="Last quarter" />
-            </StyledListItemButton>
-            <StyledListItemButton>
-                <ListItemIcon>
-                    <DashboardIcon />
-                </ListItemIcon>
-                <ListItemText primary="Year-end sale" />
+                <ListItemText primary="Send notification" />
             </StyledListItemButton>
         </>
     );
 };
-
-export const secondaryListItems = (
-    <>
-        <ListSubheader component="div" inset >
-            Saved reports
-        </ListSubheader>
-        <StyledListItemButton>
-            <ListItemIcon>
-                <DashboardIcon />
-            </ListItemIcon>
-            <ListItemText primary="Current month" />
-        </StyledListItemButton>
-        <StyledListItemButton>
-            <ListItemIcon>
-                <DashboardIcon />
-            </ListItemIcon>
-            <ListItemText primary="Last quarter" />
-        </StyledListItemButton>
-        <StyledListItemButton>
-            <ListItemIcon>
-                <DashboardIcon />
-            </ListItemIcon>
-            <ListItemText primary="Year-end sale" />
-        </StyledListItemButton>
-    </>
-);
-
-function Copyright(props) {
-    return (
-        <Typography variant="body2" color="text.secondary" align="center" {...props}>
-            {'Copyright © '}
-            <Link color="inherit" href="https://mui.com/">
-                Your Website
-            </Link>{' '}
-            {new Date().getFullYear()}
-            {'.'}
-        </Typography>
-    );
-}
 
 const drawerWidth = 240;
 
@@ -229,21 +166,21 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 const Menu = () => {
 
-    const [open, setOpen] = useState(true);
-    const [mode, setMode] = useState('light')
+    const mode = useSelector(selectThemeMode);
+    const dispatch = useDispatch();
 
+    const toggleMode = () => dispatch(updateMode());
+    const [open, setOpen] = useState(true);
 
     const toggleDrawer = () => setOpen(!open);
 
-    const toggleMode = () => setMode(mode === 'light' ? 'dark' : 'light');
 
     return (
-        <Box sx={{ display: 'flex' }}>
+        <Box display="flex" fontSize="1.5rem">
             <AppBar position="absolute" open={open}>
                 <Toolbar
                     sx={{
-                        pr: '24px', // keep right padding when drawer closed
-                        //backgroundColor: 'white'
+                        pr: '24px',
                     }}
                 >
                     <IconButton
@@ -268,16 +205,15 @@ const Menu = () => {
                         Admin
                     </Typography>
                     <IconButton sx={{ color: 'common.white', mx: 2 }} onClick={toggleMode}>
-                        {/*<Badge badgeContent={4} color="secondary">*/}
-                        {/*    <NotificationsIcon />*/}
-                        {/*</Badge>*/}
                         {
                             mode === 'light'
                                 ? <LightModeIcon color="inherit" />
                                 : <DarkModeIcon color="inherit" />
                         }
                     </IconButton>
-                    <ButtonBase aria-label="log out" onClick={()=>{console.log(2)}}>Log out</ButtonBase>
+                    <ButtonBase aria-label="log out" onClick={() => dispatch(logout())}>
+                        Log out
+                    </ButtonBase>
                 </Toolbar>
             </AppBar>
             <Drawer variant="permanent" open={open}>

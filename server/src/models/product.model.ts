@@ -8,9 +8,11 @@ type NutritionalValue = {
 export interface ProductDocument extends mongoose.Document {
     code: string,
     name: string,
-    ingridients: string[],
+    ingredients: string[],
     nutritionalValuePer100grams: NutritionalValue[],
-    category: string,
+    category: string[],
+    religiousRestrictions: string[],
+    notSuitedForIntolerances: string[],
     calories: number,
     imageURL: string
 };
@@ -25,13 +27,21 @@ const ProductSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    ingridients: {
+    ingredients: {
         type: [{
             type: String,
             required: true
         }],
         required: true
     },
+    religiousRestrictions: [{
+        type: String,
+        required: true
+    }],
+    notSuitedForIntolerances: [{
+        type: String,
+        required: true
+    }],
     nutritionalValuePer100grams: {
         type: [{
             name: {
@@ -45,19 +55,21 @@ const ProductSchema = new mongoose.Schema({
                 required: true
             }
         }],
-        validate: {
+        /*validate: {
             validator: (v: NutritionalValue[]) => {
+                console.log(v)
                 const sum = v.reduce((acc, a) => acc + a.value, 0);
+                console.log(sum)
                 return sum <= 100 && sum > 99;
             },
             message: 'Sum of all items must sum up to exactly 100 grams'
-        },
+        },*/
         required: true
     },
-    category: {
+    categories: [{
         type: String,
         required: true
-    },
+    }],
     calories: {
         type: Number
     },

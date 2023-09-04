@@ -27,26 +27,46 @@ import { useTheme } from '@mui/material/styles';
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
 import Transitions from "../../../common/transitions/Transitions";
+import {useDispatch, useSelector} from "react-redux";
+import {logout, selectCurrentUser, selectThemeMode, setError, updateMode} from "../../../state/authSlice";
+import {useNavigate} from "react-router";
+import {updateAllowExtraEmails} from "../../../actions/users";
 
+const defaultUser = 'https://t4.ftcdn.net/jpg/03/46/93/61/360_F_346936114_RaxE6OQogebgAWTalE1myseY1Hbb5qPM.jpg';
 
 const ProfileSection = () => {
 
-    const User1 = 'https://t4.ftcdn.net/jpg/03/46/93/61/360_F_346936114_RaxE6OQogebgAWTalE1myseY1Hbb5qPM.jpg';
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const user = useSelector(selectCurrentUser);
+    const theme = useSelector(selectThemeMode);
 
     const [open, setOpen] = useState(false);
-    const [notification, setNotification] = useState(false);
-    const [sdm, setSdm] = useState(false);
-    const [value, setValue] = useState('');
-    const [selectedIndex, setSelectedIndex] = useState(1);
 
     const anchorRef = useRef(null);
 
     const handleToggle = () => setOpen(!open);
-    const handleClose = () => {}
-    const handleListItemClick = (a, b, c) => {}
-    const handleLogout = () => {}
 
-    const theme = useTheme()
+    const handleClose = () => setOpen(false);
+
+    const setThemeMode = checked => {
+        dispatch(updateMode());
+    };
+
+    const handleLogout = () => {
+        dispatch(logout());
+        navigate('/product/scan');
+    };
+
+    const toggleAllowExtraEmails = checked => {
+        dispatch(updateAllowExtraEmails(checked, user._id))
+            .then(response => {
+            })
+            .catch(error => {
+                dispatch(setError({ error: error.message ?? 'An error occurred' }));
+            });
+    };
 
     return (
         <>
@@ -56,14 +76,14 @@ const ProfileSection = () => {
                     alignItems: 'center',
                     borderRadius: '27px',
                     transition: 'all .2s ease-in-out',
-                    borderColor: theme.palette.primary.light,
+                    borderColor: 'primary.light',
                     bgcolor: 'primary.light',
                     '&[aria-controls="menu-list-grow"], &:hover': {
-                        borderColor: theme.palette.primary.main,
-                        background: `${theme.palette.primary.main}!important`,
-                        color: theme.palette.primary.light,
+                        borderColor: 'primary.main',
+                        bgcolor: 'primary.main',
+                        color: 'primary.light',
                         '& svg': {
-                            stroke: theme.palette.primary.light
+                            stroke: 'primary.light'
                         }
                     },
                     '& .MuiChip-label': {
@@ -72,7 +92,7 @@ const ProfileSection = () => {
                 }}
                 icon={
                     <Avatar
-                        src={User1}
+                        src={user?.picture ? user.picture : defaultUser}
                         sx={{
                             mx: '8px !important',
                             cursor: 'pointer'
@@ -113,7 +133,7 @@ const ProfileSection = () => {
                     <Transitions in={open} {...TransitionProps}>
                         <Paper>
                             <ClickAwayListener onClickAway={handleClose}>
-                                <CardContent border={false} elevation={16} boxShadow shadow={theme.shadows[16]}>
+                                <CardContent elevation={16}>
                                     <Box sx={{ p: 2 }}>
                                         <Stack>
                                             <Stack
@@ -121,19 +141,18 @@ const ProfileSection = () => {
                                                 spacing={.5}
                                                 alignItems="center"
                                             >
-                                                <Typography variant="h4">Hi, </Typography>
+                                                <Typography variant="h4">Hello,&nbsp; </Typography>
                                                 <Typography component="span" variant="h4" sx={{ fontWeight: 400 }}>
-                                                    Name Surname
+                                                    { user ? `${user.firstName} ${user.lastName}` : 'user' }
                                                 </Typography>
                                             </Stack>
-                                            {/*<Typography variant="subtitle2">Project Admin</Typography> */}
                                         </Stack>
                                         <Divider />
                                     </Box>
                                         <Box sx={{ p: 2 }}>
                                             <Card
                                                 sx={{
-                                                    bgcolor: theme.palette.primary.light,
+                                                    bgcolor: 'primary.light',
                                                     my: 1,
 
                                                 }}
@@ -144,40 +163,46 @@ const ProfileSection = () => {
                                                     direction="column"
                                                     sx={{
                                                         p: 1,
-                                                        bgcolor: '#becaf8'
+                                                        bgcolor: 'primary.light'
                                                     }}
                                                 >
                                                     <Grid item>
                                                         <Grid item container alignItems="center" justifyContent="space-between">
                                                             <Grid item>
-                                                                <Typography variant="subtitle1">Dark mode</Typography>
+                                                                <Typography variant="subtitle1">
+                                                                    Dark mode
+                                                                </Typography>
                                                             </Grid>
                                                             <Grid item>
                                                                 <Switch
                                                                     color="primary"
-                                                                    checked={sdm}
-                                                                    onChange={(e) => setSdm(e.target.checked)}
+                                                                    checked={theme === 'dark'}
+                                                                    onChange={e => setThemeMode(e.target.checked)}
                                                                     name="sdm"
                                                                     size="small"
                                                                 />
                                                             </Grid>
                                                         </Grid>
                                                     </Grid>
-                                                    <Grid item>
-                                                        <Grid item container alignItems="center" justifyContent="space-between">
+                                                    {
+                                                        user && (
                                                             <Grid item>
-                                                                <Typography variant="subtitle1">Allow Notifications</Typography>
+                                                                <Grid item container alignItems="center" justifyContent="space-between">
+                                                                    <Grid item>
+                                                                        <Typography variant="subtitle1">Allow extra emails</Typography>
+                                                                    </Grid>
+                                                                    <Grid item>
+                                                                        <Switch
+                                                                            checked={user.allowExtraEmails}
+                                                                            onChange={e => toggleAllowExtraEmails(e.target.checked)}
+                                                                            name="sdm"
+                                                                            size="small"
+                                                                        />
+                                                                    </Grid>
+                                                                </Grid>
                                                             </Grid>
-                                                            <Grid item>
-                                                                <Switch
-                                                                    checked={notification}
-                                                                    onChange={(e) => setNotification(e.target.checked)}
-                                                                    name="sdm"
-                                                                    size="small"
-                                                                />
-                                                            </Grid>
-                                                        </Grid>
-                                                    </Grid>
+                                                        )
+                                                    }
                                                 </Grid>
                                             </Card>
                                             <Divider />
@@ -187,17 +212,17 @@ const ProfileSection = () => {
                                                     width: '100%',
                                                     maxWidth: 350,
                                                     minWidth: 300,
-                                                    backgroundColor: theme.palette.background.paper,
+                                                    backgroundColor: 'background.paper',
                                                     borderRadius: '10px',
-                                                    [theme.breakpoints.down('md')]: {
+                                                    /*[theme.breakpoints.down('md')]: {
                                                         minWidth: '100%'
-                                                    },
+                                                    },*/
                                                     '& .MuiListItemButton-root': {
                                                         mt: 0.5
                                                     }
                                                 }}
                                             >
-                                            <ListItemButton
+                                                {/*<ListItemButton
                                                 sx={{ borderRadius: `5px` }}
                                                 selected={selectedIndex === 0}
                                                 onClick={(event) => handleListItemClick(event, 0, '/user/account-profile/profile1')}
@@ -215,17 +240,31 @@ const ProfileSection = () => {
                                                     <IconQuestionMark stroke={1.5} size="1.3rem" />
                                                 </ListItemIcon>
                                                 <ListItemText  primary={<Typography variant="body2">About</Typography>} />
-                                            </ListItemButton>
-                                            <ListItemButton
-                                                sx={{ borderRadius: `5px` }}
-                                                selected={selectedIndex === 4}
-                                                onClick={handleLogout}
-                                            >
-                                                <ListItemIcon>
-                                                    <IconLogout stroke={1.5} size="1.3rem" />
-                                                </ListItemIcon>
-                                                <ListItemText primary={<Typography variant="body2">Logout</Typography>} />
-                                            </ListItemButton>
+                                            </ListItemButton>*/}
+                                            {
+                                                user ? (
+                                                    <ListItemButton
+                                                        sx={{ borderRadius: `5px` }}
+                                                        //selected={selectedIndex === 4}
+                                                        onClick={handleLogout}
+                                                    >
+                                                        <ListItemIcon>
+                                                            <IconLogout stroke={1.5} size="1.3rem" />
+                                                        </ListItemIcon>
+                                                        <ListItemText primary={<Typography variant="body2">Logout</Typography>} />
+                                                    </ListItemButton>
+                                                ) : (
+                                                    <ListItemButton
+                                                        sx={{ borderRadius: `5px` }}
+                                                        onClick={() => navigate('/login')}
+                                                    >
+                                                        <ListItemIcon>
+                                                            <IconLogout stroke={1.5} size="1.3rem" />
+                                                        </ListItemIcon>
+                                                        <ListItemText primary={<Typography variant="body2">Login</Typography>} />
+                                                    </ListItemButton>
+                                                )
+                                            }
                                         </List>
                                         </Box>
                                 </CardContent>

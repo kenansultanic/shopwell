@@ -20,7 +20,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import {compareRestrictions, searchFilter, selectRestrictionByType} from "../../../util/utils";
 import PerfectScrollbar from "react-perfect-scrollbar";
 import {useDispatch, useSelector} from "react-redux";
-import {selectCurrentUser, setUser} from "../../../state/authSlice";
+import {selectCurrentUser, selectRestrictions, setUser} from "../../../state/authSlice";
 import {axiosClient} from "../../../api/AxiosClient";
 import MosqueIcon from '@mui/icons-material/Mosque';
 import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
@@ -33,6 +33,8 @@ import TextField from "@mui/material/TextField";
 import {useFormik} from "formik";
 import { suggestRestrictionSchema } from "../../../common/schemas/validationSchema";
 import {initialMenuDialogOpen, menuDialogReducer} from "../../../reducers/MenuDialogReducer";
+import {getRestrictions, updateUserRestrictions} from "../../../actions/users";
+import {suggestNewRestriction} from "../../../api/user";
 
 export const StyledListItemIcon = styled(ListItemIcon)(({ theme }) => ({
     padding: '2px',
@@ -67,14 +69,12 @@ const CustomDialog = ({ open, handleClose, type, data }) => {
     const [selectedRestrictions, setSelectedRestrictions] = useState(selectRestrictionByType(dietaryRestrictions, type));
 
     const saveChanges = () => {
-        axiosClient.patch(`/user/update-${type}`, { data: selectedRestrictions })
+        dispatch(updateUserRestrictions(selectedRestrictions, type))
             .then(response => {
-                dispatch(setUser({
-                    user: response.data.updated
-                }));
+                console.info(response)
             })
             .catch(error => {
-                console.log(error)
+
             });
     };
 
@@ -102,6 +102,7 @@ const CustomDialog = ({ open, handleClose, type, data }) => {
         setSearchValue('');
         setSelectedRestrictions(selectRestrictionByType(dietaryRestrictions, type));
     }
+
     const handleSave = () => {
         //setAllergies()
         saveChanges();
@@ -144,15 +145,17 @@ const CustomDialog = ({ open, handleClose, type, data }) => {
                     >
                         {
                             currentData.map(option =>
-                                <FormControlLabel
-                                    key={option}
-                                    label={option}
-                                    value={option}
-                                    control={
-                                        <Checkbox checked={selectedRestrictions.includes(option)} />
-                                    }
-                                    onChange={handleChange}
-                                />
+                                option.type === type ?
+                                    <FormControlLabel
+                                        key={option.name}
+                                        label={option.name}
+                                        value={option.name}
+                                        control={
+                                            <Checkbox checked={selectedRestrictions.includes(option.name)} />
+                                        }
+                                        onChange={handleChange}
+                                    />
+                                    : undefined
                             )
                         }
                     </FormGroup>
@@ -176,31 +179,35 @@ const CustomDialog = ({ open, handleClose, type, data }) => {
 CustomDialog.propTypes = {
     open: PropTypes.bool.isRequired,
     handleClose: PropTypes.func.isRequired,
-    type: PropTypes.oneOf(['allergies', 'religious', 'intolerances']).isRequired,
-    data: PropTypes.arrayOf(PropTypes.string)
+    type: PropTypes.oneOf(['allergy', 'religious', 'intolerance']).isRequired,
+    data: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.object]))
 };
 
-const ProfileMenu = () => {
+const RestrictionsMenu = () => {
+
+    const dispatchRestrictions = useDispatch();
 
     const [open, dispatch] = useReducer(menuDialogReducer, initialMenuDialogOpen);
-    const [restrictions, setRestrictions] = useState(null);
+    const restrictions = useSelector(selectRestrictions);
+
     const [suggestionDialogOpen, setSuggestionDialogOpen] = useState(false);
 
     useEffect(() => {
-        axiosClient.get('/user/get-restrictions')
-            .then(response => {
-                setRestrictions(response.data.restrictions);
-                console.log(response.data.restrictions);
-            })
-            .catch(error => {
-                console.error(error)
-            })
+        if (!restrictions)
+            dispatchRestrictions(getRestrictions())
+                .then(response => {
+
+                })
+                .catch(error => {
+                    console.error(error)
+                })
     }, []);
 
     const submitNewSuggestion = ({ name, type, description }, actions) => {
-        axiosClient.post('/user/suggest-new-restriction', { name, type, description })
+        suggestNewRestriction( name, type, description)
             .then(response => {
-                console.log(response)
+                setSuggestionDialogOpen(false);
+                actions.resetForm();
             })
             .catch(error => {
                 console.log(error)
@@ -273,11 +280,11 @@ const ProfileMenu = () => {
                 restrictions &&
                 <>
                     <CustomDialog open={open[0].open} handleClose={() => handleDialogClose('allergies')}
-                                  type="allergies" data={restrictions?.allergies?.map(item => item.name)} />
+                                  type="allergy" data={restrictions} />
                     <CustomDialog open={open[1].open} handleClose={() => handleDialogClose('religious')}
-                                  type="religious" data={restrictions?.religious?.map(item => item.name)} />
+                                  type="religious" data={restrictions} />
                     <CustomDialog open={open[2].open} handleClose={() => handleDialogClose('intolerances')}
-                                  type="intolerances" data={restrictions?.intolerances?.map(item => item.name)} />
+                                  type="intolerance" data={restrictions} />
                 </>
             }
             <Dialog open={suggestionDialogOpen} sx={{ '& .MuiDialog-paper': { width: '80%' } }} >
@@ -287,16 +294,17 @@ const ProfileMenu = () => {
                         <Grid container spacing={2}>
                             <Grid item xs={10} style={{ marginTop: '4px' }}>
                                 <TextField
-                                    name="name"
                                     required
                                     fullWidth
+                                    size="small"
+                                    name="name"
                                     id="name"
                                     label="Name"
                                     value={values.name}
                                     onChange={handleChange}
                                     onBlur={handleBlur}
                                     error={errors.name && touched.name}
-                                    helperText={errors.name && touched.name ? errors.name : ''}
+                                    helperText={errors.name && touched.name ? errors.name : ' '}
                                 />
                             </Grid>
                             <Grid item xs={10}>
@@ -328,6 +336,7 @@ const ProfileMenu = () => {
                             <Grid item xs={10}>
                                 <TextField
                                     fullWidth
+                                    size="small"
                                     id="description"
                                     label="Short description"
                                     name="description"
@@ -336,8 +345,8 @@ const ProfileMenu = () => {
                                     onBlur={handleBlur}
                                     error={(errors.description && touched.description) || !!status?.description}
                                     helperText={
-                                        (errors.description && touched.description ? errors.description : '') ||
-                                        (status?.description ? status.description : '')
+                                        (errors.description && touched.description ? errors.description : ' ') ||
+                                        (status?.description ? status.description : ' ')
                                     }
                                 />
                             </Grid>
@@ -355,4 +364,4 @@ const ProfileMenu = () => {
     );
 }
 
-export default ProfileMenu;
+export default RestrictionsMenu;

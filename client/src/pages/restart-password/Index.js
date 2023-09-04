@@ -28,7 +28,6 @@ const Index = () => {
     const togglePasswordField = () => setShowPassword(!showPassword);
 
     const onSubmit = async (values, actions) => {
-
         email ?
             restartPassword(values, actions) :
             verifyEmail(values, actions);
@@ -66,21 +65,7 @@ const Index = () => {
     });
 
     return (
-        <Grid container component="main" sx={{height: '100vh'}}>
-            <Grid
-                item
-                xs={false}
-                sm={4}
-                md={7}
-                sx={{
-                    backgroundImage: 'url(https://source.unsplash.com/random)',
-                    backgroundRepeat: 'no-repeat',
-                    backgroundColor: (t) =>
-                        t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                }}
-            />
+        <Grid container component="main" sx={{height: '100vh', justifyContent: 'center'}}>
             <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
                 <Box
                     sx={{
@@ -119,30 +104,35 @@ const Index = () => {
                                 !email ?
                                     (
                                         <TextField
-                                            margin="normal"
+                                            autoFocus
                                             required
                                             fullWidth
+                                            size="small"
+                                            margin="normal"
                                             id="email"
                                             label="Enter your email address"
                                             name="email"
                                             autoComplete="email"
-                                            autoFocus
                                             value={values.email}
                                             onChange={handleChange}
                                             onBlur={handleBlur}
                                             error={(errors.email && touched.email) || !!status?.email}
-                                            helperText={(errors.email && touched.email ? errors.email : '') || (status?.email ? status.email : '')}
+                                            helperText={
+                                                (errors.email && touched.email ? errors.email : ' ') ||
+                                                (status?.email ? status.email : ' ')
+                                            }
                                         />
                                     ) : (
                                         <>
                                             <TextField
-                                                margin="normal"
+                                                autoFocus
                                                 required
                                                 fullWidth
+                                                margin="normal"
+                                                size="small"
                                                 id="code"
                                                 label="Enter the 6 digit code sent to your email"
                                                 name="code"
-                                                autoFocus
                                                 value={values.code}
                                                 onChange={handleChange}
                                                 onBlur={handleBlur}
@@ -150,9 +140,10 @@ const Index = () => {
                                                 helperText={errors.code && touched.code ? errors.code : status?.code ? status.code : ''}
                                             />
                                             <TextField
-                                                margin="normal"
                                                 required
                                                 fullWidth
+                                                size="small"
+                                                margin="normal"
                                                 name="password"
                                                 label="Password"
                                                 type={showPassword ? 'text' : 'password'}
@@ -175,7 +166,7 @@ const Index = () => {
                                                 onChange={handleChange}
                                                 onBlur={handleBlur}
                                                 error={errors.password && touched.password}
-                                                helperText={errors.password && touched.password ? errors.password : ''}
+                                                helperText={errors.password && touched.password ? errors.password : ' '}
                                             />
                                             <Grid container>
                                                 <Grid item>

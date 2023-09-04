@@ -33,12 +33,12 @@ const PromotionalEmail = () => {
                    sx={{ mt: 6, p: 3, '.MuiFormControl-root': { my: '10px' } }}
             >
                 <TextField
+                    autoFocus
                     required
                     fullWidth
                     id="subject"
                     label="Subject of email"
                     name="subject"
-                    autoFocus
                     value={values.subject}
                     onChange={handleChange}
                     onBlur={handleBlur}

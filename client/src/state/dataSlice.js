@@ -3,9 +3,10 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
     users: [],
     products: [],
-    productReviews: [],
+    'product-reviews': [],
     restrictions: [],
-    restrictionSuggestions: []
+    'restriction-suggestions': [],
+    statistics: null
 };
 
 export const dataSlice = createSlice({
@@ -14,14 +15,13 @@ export const dataSlice = createSlice({
     reducers: {
         setUsers: (state, action) => { state.users = action.payload.users; },
         appendUsers: (state, action) => {state.users = [...state.users, ...action.payload.users]; },
-        //state.users.push(...action.payload.users.filter(item => !state.users.find(e => e._id === item._id)));
         setProducts: (state, action) => { state.products = action.payload.products; },
-        setProductReviews: (state, action) => { state.productReviews = action.payload.productReviews; },
+        setProductReviews: (state, action) => { state['product-reviews'] = action.payload.productReviews; },
         setRestrictions: (state, action) => { state.restrictions = action.payload.restrictions; },
         appendRestrictions: (state, action) => { state.restrictions = [...state.restrictions, ...action.payload.restrictions]; },
         setRestrictionSuggestions: (state, action) => { state.restrictionSuggestions = action.payload.restrictionSuggestions; },
 
-
+        setStatistics: (state, action) => { state.statistics = { ...action.payload } },
         updateRestriction: (state, action) => {
             const index = state.restrictions.findIndex(item => item._id === action.payload.restriction._id);
             if (index === -1)
@@ -30,7 +30,12 @@ export const dataSlice = createSlice({
         },
         appendResources: (state, action) => {
             const { resources, resourceType } = action.payload;
-            state[resourceType] = [...state[resourceType], ...resources];
+            resources.forEach(resource => {
+                const index = state[resourceType].findIndex(item => item._id === resource._id);
+                if (index === -1)
+                    state[resourceType].push(resource);
+            });
+            //state[resourceType] = [...state[resourceType], ...resources];
         },
         updateResource: (state, action) => {
             const { resource, resourceType } = action.payload;
@@ -51,6 +56,7 @@ export const {
     appendUsers,
     setProducts,
     setProductReviews,
+    setStatistics,
     setRestrictions,
     appendRestrictions,
     updateRestriction,
@@ -67,5 +73,7 @@ export const selectUserByID = (state, equalityFn) => state.data.users.find(equal
 export const selectProducts = state => state.data.products;
 
 export const selectRestrictions = state => state.data.restrictions;
+
+export const selectStatistics = state => state.data.statistics;
 
 export default dataSlice.reducer;

@@ -1,28 +1,20 @@
 import { LineChart, Line, XAxis, YAxis, Label, ResponsiveContainer } from "recharts";
 import Typography from "@mui/material/Typography";
 
-const Chart = () => {
+const Chart = ({ scansPerDay }) => {
 
-    // Generate Sales Data
-    function createData(time, amount) {
-        return { time, amount };
-    }
+    const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-    const data = [
-        createData('00:00', 0),
-        createData('03:00', 300),
-        createData('06:00', 600),
-        createData('09:00', 800),
-        createData('12:00', 1500),
-        createData('15:00', 2000),
-        createData('18:00', 2400),
-        createData('21:00', 2400),
-        createData('24:00', undefined),
-    ];
+    const data = scansPerDay?.map(({ date, numberOfScans }) => {
+        return {
+            numberOfScans,
+            day: weekdays[new Date(date).getDay()]
+        }
+    });
 
     return (
         <>
-            <Typography>Today</Typography>
+            <Typography>Last Seven Days</Typography>
             <ResponsiveContainer>
                 <LineChart
                     data={data}
@@ -34,7 +26,7 @@ const Chart = () => {
                     }}
                 >
                     <XAxis
-                        dataKey="time"
+                        dataKey="day"
                     />
                     <YAxis
                     >
@@ -45,13 +37,13 @@ const Chart = () => {
                                 textAnchor: 'middle',
                             }}
                         >
-                            Sales ($)
+                            Product scans
                         </Label>
                     </YAxis>
                     <Line
                         isAnimationActive={false}
                         type="monotone"
-                        dataKey="amount"
+                        dataKey="numberOfScans"
                         dot={false}
                     />
                 </LineChart>

@@ -7,8 +7,8 @@ const userSchema = [
 
 const productSchema = [
     { field: 'code', headerName: 'Code', width: 150 },
+    { field: '_id', headerName: 'ID', width: 150 },
     { field: 'name', headerName: 'Name', width: 150 },
-    { field: 'category', headerName: 'Category', width: 150 },
 ];
 
 const productReviewSchema = [
@@ -35,6 +35,8 @@ export const getListResourceSchema = resource => {
           return userSchema;
       case 'products':
           return productSchema;
+      case 'restrictions':
+          return restrictionSchema;
       case 'product-reviews':
           return productReviewSchema;
       case 'restriction-suggestions':

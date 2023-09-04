@@ -7,6 +7,7 @@ import {axiosClient} from "../../../api/AxiosClient";
 import {Visibility, VisibilityOff} from "@mui/icons-material";
 import TextField from "@mui/material/TextField";
 import {useState} from "react";
+import {changePassword} from "../../../api/user";
 
 const ChangePassword = () => {
 
@@ -24,18 +25,17 @@ const ChangePassword = () => {
             return;
         }
 
-        axiosClient.patch('/auth/change-password', { oldPassword, newPassword })
+        changePassword(oldPassword, newPassword)
             .then(response => {
                 actions.resetForm();
             })
             .catch(error => {
-                console.log(error)
                 actions.setErrors({ oldPassword: error.data?.message ?? 'An error occurred' });
                 actions.setSubmitting(false);
             });
     };
 
-    const { values, errors, touched, status, isSubmitting, handleChange, handleBlur, handleSubmit } = useFormik({
+    const { values, errors, touched, isSubmitting, handleChange, handleBlur, handleSubmit } = useFormik({
         initialValues: { oldPassword: '', newPassword: '' },
         validationSchema: updateUserPasswordSchema,
         onSubmit
@@ -43,11 +43,12 @@ const ChangePassword = () => {
 
     return (
         <Grid container>
-            <Grid item xs={12} sm={9} md={7} style={{ marginLeft: '24px', marginTop: '48px' }}>
+            <Grid item xs={11} sm={9} md={7} style={{ marginLeft: '24px', marginTop: '48px' }}>
                 <Box component="form" noValidate onSubmit={handleSubmit}>
                     <TextField
                         required
                         fullWidth
+                        size="small"
                         margin="normal"
                         name="oldPassword"
                         label="Old password"
@@ -71,11 +72,12 @@ const ChangePassword = () => {
                         onBlur={handleBlur}
                         value={values.oldPassword}
                         error={errors.oldPassword && touched.oldPassword}
-                        helperText={errors.oldPassword && touched.oldPassword ? errors.oldPassword : ''}
+                        helperText={errors.oldPassword && touched.oldPassword ? errors.oldPassword : ' '}
                     />
                     <TextField
                         required
                         fullWidth
+                        size="small"
                         margin="normal"
                         name="newPassword"
                         label="New password"
@@ -99,12 +101,8 @@ const ChangePassword = () => {
                         onBlur={handleBlur}
                         value={values.newPassword}
                         error={errors.newPassword && touched.newPassword}
-                        helperText={errors.newPassword && touched.newPassword ? errors.newPassword : ''}
+                        helperText={errors.newPassword && touched.newPassword ? errors.newPassword : ' '}
                     />
-                    {/*<PasswordInput nameID="newPassword" placeholder="New password" handleChange={handleChange}*/}
-                    {/*               handleBlur={handleBlur} passwordValue={values.newPassword}*/}
-                    {/*               passwordError={errors.newPassword} passwordTouched={touched.newPassword}*/}
-                    {/*/>*/}
                     <Button
                         fullWidth
                         type="submit"

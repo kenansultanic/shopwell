@@ -2,12 +2,24 @@ import * as api from "../../api/admin";
 import * as reducers from "../../state/dataSlice";
 
 
+export const getStatistics = () => async dispatch => {
+
+    const response = await api.getStatistics();
+    const { data } = response;
+
+    if (data)
+        dispatch(reducers.setStatistics({ ...data }));
+
+    return response;
+};
+
 export const saveResource = (fields, resourceType) => async dispatch => {
 
     const response = await api.saveResource(fields, resourceType);
     const { resource } = response.data;
 
-    if (resource === 12)
+    // todo bilo === 12
+    if (resource)
         dispatch(reducers.appendResources({ resources: [resource], resourceType }));
 
     return response;

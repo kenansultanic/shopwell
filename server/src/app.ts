@@ -1,17 +1,17 @@
 import dotenv from "dotenv";
 import http from "http";
 import { Server } from "socket.io";
-import database from "./utils/database";
+import connectToDatabase from "./utils/database";
 import initializeServer from "./utils/server";
 import { saveNotification } from "./actions/notification";
+import { registerScan } from "./actions/scans";
 
-
+connectToDatabase();
 
 dotenv.config();
 
 const PORT = process.env.PORT || 4000;
 
-// TODO(IZMJESTII)
 declare global {
     namespace Express {
       interface Request {
@@ -24,6 +24,7 @@ const app = initializeServer();
 
 const server = http.createServer(app);
 
+
 const io = new Server(server, {
   cors: {
     origin: 'http://localhost:3000',
@@ -32,17 +33,21 @@ const io = new Server(server, {
 });
 
 io.on('connection', socket => {
-  //console.log('user', socket.id);
-
-  socket.on("test", data => {
-    console.log("dodje")
-    socket.broadcast.emit("test2", {test: 1});
-  })
-
+  
   socket.on('send_notification', async data => {
     const newNotification = await saveNotification(data);
     socket.broadcast.emit('receive_notification', { newNotification });
   });
+
+  socket.on('register_scan', data => {
+    try {
+      registerScan(data.date);
+    }
+    catch (error) {
+      console.error(error);
+    }
+  });
+
 });
 
 

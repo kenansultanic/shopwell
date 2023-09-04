@@ -8,7 +8,7 @@ const UserLayout = () => {
     const user = useSelector(selectCurrentUser);
 
     return (
-        user.type !== 'admin'
+        user?.type !== 'admin'
             ? <Outlet />
             : <Navigate to="login" />
     );
