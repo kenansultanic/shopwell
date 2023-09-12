@@ -5,17 +5,20 @@ dotenv.config();
 
 const mongoString = process.env.MONGO_URI ?? '';
 
-mongoose.set('strictQuery', false);
-mongoose.connect(mongoString);
+const connectToDatabase = () => {
 
-const database = mongoose.connection;
+    mongoose.set('strictQuery', false);
+    mongoose.connect(mongoString);
 
-database.on('error', error => {
-    console.error(error);
-});
+    const database = mongoose.connection;
 
-database.once('connected', () => {
-    console.info('Database connected');
-});
+    database.on('error', error => {
+        console.error(error);
+    });
 
-export default database;
+    database.once('connected', () => {
+        console.info('Database connected');
+    });
+};
+
+export default connectToDatabase;

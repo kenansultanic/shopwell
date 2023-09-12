@@ -59,7 +59,7 @@ export const login = async (req: Request, res: Response) => {
 
     try {
         const user = await User.findOne({ email }).lean();
-        
+
         if (!user)
             return res.status(400).json({ message: 'User does not exist' });
         
@@ -114,15 +114,15 @@ export const newAccesToken = async (req: Request, res: Response) => {
 
     const { refreshToken } = req.body;
 
-    jwt.verify(
-        refreshToken,
-        process.env.JWT_SECRET ?? '42',
-        (error: any, decoded: any) => {
+    jwt.verify(refreshToken, process.env.JWT_SECRET!, (error: any, decoded: any) => {
             
             if (error) 
                 return res.sendStatus(403); // Invalid token
+                                        // bilo user: decoded 
 
-            const accessToken = jwt.sign({ user: decoded }, process.env.JWT_SECRET ?? '42', { expiresIn: '30m' });    
+            const { iat, exp, ...rest } = decoded;
+            
+            const accessToken = jwt.sign({ ...rest }, process.env.JWT_SECRET!, { expiresIn: '30m' });    
            
             res.status(200).json({ accessToken });
         }

@@ -160,10 +160,11 @@ const NewResource = () => {
 
     const { resource } = useParams();
 
-    const [validationSchema, initialValues] = getValidationSchema(resource === 'users' ? 'users-new' : resource);
+    const [validationSchema, initialValues] = getValidationSchema(resource === 'products' ? 'products-new' : resource);
     const newResourceSchema = getNewResourceSchema(resource);
 
     return (
+        ['products', 'restrictions'].includes(resource) ?
         <>
             <HandleResource
                 validationSchema={validationSchema}
@@ -171,7 +172,11 @@ const NewResource = () => {
                 initialValues={initialValues}
                 dispatchCall={saveResource}
             />
-        </>
+        </> : (
+            <Box display="flex" justifyContent="center">
+                <Typography>You can't create a new resource of that type</Typography>
+            </Box>
+        )
     );
 };
 

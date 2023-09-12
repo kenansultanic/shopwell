@@ -12,20 +12,28 @@ import {
     ExpandLess as ExpandLessIcon,
     ExpandMore as ExpandMoreIcon,
 } from "@mui/icons-material";
-
+import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
 import KeyIcon from '@mui/icons-material/Key';
 import DashboardIcon from '@mui/icons-material/Dashboard';
+import InfoIcon from '@mui/icons-material/Info';
+import BlockIcon from '@mui/icons-material/Block';
+import LockResetIcon from '@mui/icons-material/LockReset';
 import FormatBoldIcon from '@mui/icons-material/FormatBold';
 import PaletteIcon from '@mui/icons-material/Palette';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import SpaIcon from '@mui/icons-material/Spa';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
+import LightModeIcon from '@mui/icons-material/LightMode';
 import {initialSidebarListValues, sidebarReducer} from "../../../reducers/SidebarListReducer";
+import {NavLink} from "react-router-dom";
+import {useDispatch, useSelector} from "react-redux";
+import {selectCurrentUser, selectThemeMode, updateMode} from "../../../state/authSlice";
 
 export const StyledListItemButton = styled(ListItemButton)(({ theme }) => ({
     borderRadius: '10px !important',
     padding: '8px 18px',
     margin: '4px 0',
+    maxWidth: '95%',
     '&.Mui-selected': {
         backgroundColor: theme.palette.secondary.light,
         color: theme.palette.secondary.dark,
@@ -50,11 +58,16 @@ const StyledListSubItem = styled(ListItem)(({ theme }) => ({
     }
 }));
 
-const StyledListItem = ({ id, text, select, Icon, handleListItemClick }) => {
+const StyledListItem = ({ id, text, select, Icon, handleListItemClick, linkTo }) => {
 
     const selected = select[id].selected;
     return (
-        <StyledListItemButton selected={selected} onClick={() => handleListItemClick(id)}>
+        <StyledListItemButton
+            component={linkTo ? NavLink : undefined}
+            to={linkTo}
+            selected={selected}
+            onClick={() => handleListItemClick(id)}
+        >
             <ListItemIcon sx={{ }} >
                 { Icon }
             </ListItemIcon>
@@ -64,6 +77,11 @@ const StyledListItem = ({ id, text, select, Icon, handleListItemClick }) => {
 };
 
 const MenuList = () => {
+
+    const themeDispatch = useDispatch();
+
+    const user = useSelector(selectCurrentUser);
+    const mode = useSelector(selectThemeMode);
 
     const [select, dispatch] = useReducer(sidebarReducer, initialSidebarListValues);
 
@@ -77,26 +95,20 @@ const MenuList = () => {
         setNestedOpen(!nestedOpen);
     };
 
+    const handleThemeChange = () => {
+        themeDispatch(updateMode());
+    };
+
     return (
         <List>
-            <ListItemText primary="Dashboard" sx={{ my: 2, span: { fontWeight: 600 } }} />
-            {/*<StyledListItem*/}
-            {/*    button selected={select[0].selected}*/}
-            {/*    onClick={() => handleListItemClick(0)}*/}
-            {/*>*/}
-            {/*    <ListItemIcon sx={{ color: 'secondary.dark'}}><DashboardIcon /></ListItemIcon>*/}
-            {/*    <ListItemText primary="Dashboard" />*/}
-            {/*</StyledListItem>*/}
+            <ListItemText primary="Scanner" sx={{ my: 2, span: { fontWeight: 600 } }} />
 
-            <StyledListItem id={0} text="Dashboard" select={select}
-                             Icon={<Dashboard />} handleListItemClick={handleListItemClick} />
-
-            <StyledListItem id={1} text="Dashboard" select={select}
-                             Icon={<Dashboard />} handleListItemClick={handleListItemClick} />
+            <StyledListItem id={0} text="Scan product" linkTo="/product/scan" select={select}
+                            Icon={<QrCodeScannerIcon />} handleListItemClick={handleListItemClick} />
 
             <Divider style={{ marginTop: '14px' }} />
 
-            <ListItemText primary="Dashboard" sx={{ my: 2, span: { fontWeight: 600 } }} />
+            <ListItemText primary="Auth" sx={{ my: 2, span: { fontWeight: 600 } }} />
 
             <StyledListItemButton
                 selected={nestedOpen}
@@ -122,7 +134,7 @@ const MenuList = () => {
                           fontSize: 'initial'
                     }}
                 >
-                    <StyledListSubItem>
+                    <StyledListSubItem component={NavLink} to="/login">
                         <ListItemIcon sx={{ mr: 1, minWidth: '5px' }}>
                             <>&#9679;</>
                         </ListItemIcon>
@@ -131,7 +143,7 @@ const MenuList = () => {
                             primaryTypographyProps={{ variant: 'subtitle2' }}
                         />
                     </StyledListSubItem>
-                    <StyledListSubItem>
+                    <StyledListSubItem component={NavLink} to="/register">
                         <ListItemIcon sx={{ mr: 1, minWidth: '5px' }}>
                             <>&#9679;</>
                         </ListItemIcon>
@@ -143,71 +155,28 @@ const MenuList = () => {
                 </List>
             </Collapse>
             <Divider style={{ marginTop: '14px' }} />
+            {
+                user && (
+                    <>
+                        <ListItemText primary="User" sx={{ my: 2, span: { fontWeight: 600 } }} />
 
-            <ListItemText primary="Dashboard" sx={{ my: 2, span: { fontWeight: 600 } }} />
-
-            <StyledListItemButton>
-                <ListItemIcon><FormatBoldIcon /></ListItemIcon>
-                <ListItemText primary="Item 1" />
-            </StyledListItemButton>
-            <StyledListItemButton>
-                <ListItemIcon><PaletteIcon /></ListItemIcon>
-                <ListItemText primary="Item 2" />
-            </StyledListItemButton>
-            <StyledListItemButton>
-                <ListItemIcon><AddCircleOutlineIcon /></ListItemIcon>
-                <ListItemText primary="Item 3" />
-            </StyledListItemButton>
-            <StyledListItemButton>
-                <ListItemIcon><SpaIcon /></ListItemIcon>
-                <ListItemText primary="Item 4" />
-            </StyledListItemButton>
-            <Divider />
-            <StyledListItemButton>
-                <ListItemIcon><DarkModeIcon /></ListItemIcon>
-                <ListItemText primary="Night mode" />
+                        <StyledListItem id={1} text="Info" linkTo="/user/profile/info" select={select} Icon={<InfoIcon />}
+                                        handleListItemClick={handleListItemClick} />
+                        <StyledListItem id={2} text="Restrictions" linkTo="/user/profile/restrictions" select={select}
+                                        Icon={<BlockIcon />} handleListItemClick={handleListItemClick} />
+                        <StyledListItem id={3} text="Change password" linkTo="/user/profile/change-password" select={select}
+                                        Icon={<LockResetIcon />} handleListItemClick={handleListItemClick} />
+                        <Divider />
+                    </>
+                )
+            }
+            <StyledListItemButton onClick={handleThemeChange}>
+                <ListItemIcon>
+                    { mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon /> }
+                </ListItemIcon>
+                <ListItemText primary={mode === 'dark' ? 'Light mode' : 'Dark mode'} />
             </StyledListItemButton>
         </List>
-        // <List>
-        //     <ListItem button onClick={handleOpen}>
-        //         <ListItemIcon>{/!* Add your icon here *!/}</ListItemIcon>
-        //         <ListItemText primary="ProfileMenu Item 1" />
-        //         {open ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-        //     </ListItem>
-        //     <Collapse in={open} timeout="auto" unmountOnExit>
-        //         <List component="div" disablePadding>
-        //             <ListItem button sx={{ pl: 4 }} onClick={handleNestedOpen}>
-        //                 <ListItemIcon>{/!* Add your icon here *!/}</ListItemIcon>
-        //                 <ListItemText primary="Submenu Item 1" />
-        //                 {nestedOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-        //             </ListItem>
-        //             <Collapse in={nestedOpen} timeout="auto" unmountOnExit>
-        //                 <List component="div" disablePadding>
-        //                     <ListItem button sx={{ pl: 4 }}>
-        //                         <ListItemIcon>{/!* Add your icon here *!/}</ListItemIcon>
-        //                         <ListItemText primary="Submenu Item 1-1" />
-        //                     </ListItem>
-        //                     <ListItem button sx={{ pl: 4 }}>
-        //                         <ListItemIcon>{/!* Add your icon here *!/}</ListItemIcon>
-        //                         <ListItemText primary="Submenu Item 1-2" />
-        //                     </ListItem>
-        //                 </List>
-        //             </Collapse>
-        //             <ListItem button sx={{ pl: 4 }}>
-        //                 <ListItemIcon>{/!* Add your icon here *!/}</ListItemIcon>
-        //                 <ListItemText primary="Submenu Item 2" />
-        //             </ListItem>
-        //         </List>
-        //     </Collapse>
-        //     <ListItem button>
-        //         <ListItemIcon>{/!* Add your icon here *!/}</ListItemIcon>
-        //         <ListItemText primary="ProfileMenu Item 2" />
-        //     </ListItem>
-        //     <ListItem button>
-        //         <ListItemIcon>{/!* Add your icon here *!/}</ListItemIcon>
-        //         <ListItemText primary="ProfileMenu Item 3" />
-        //     </ListItem>
-        // </List>
     );
 }
 

@@ -11,11 +11,12 @@ import userRouter from "../routes/user";
 import productRouter from "../routes/product";
 import adminRouter from "../routes/admin";
 import { hashPassword } from "./functions";
+import ScansPerDay from "../models/scans-per-day.model";
 
 //import { admin, adminRouter } from "../admin/admin";
 
 dotenv.config();
-
+/*
 const mongoString = process.env.MONGO_URI!;
 
 mongoose.set('strictQuery', false);
@@ -29,7 +30,7 @@ database.on('error', error => {
 
 database.once('connected', () => {
     console.info('Database connected.');
-});
+});*/
 
 const initializeServer = () => {
 
@@ -46,6 +47,28 @@ const initializeServer = () => {
     }));
 
     app.get('/', async (req, res)=>res.status(201).json({some: await hashPassword('Admin123')}))
+
+    app.get("/test", async (req, res) => {
+        let s: any = []
+        for (let i = 1; i < 7; i++) {
+            const novi = new ScansPerDay({
+                date: new Date(new Date(new Date().setDate(new Date().getDate()-i)).toLocaleDateString()),
+                numberOfScans: Math.floor(Math.random() * 100) + 1
+            });
+            const k = await novi.save()
+            s.push(k)
+        }
+        res.send({s})
+    });
+
+    app.get("/test2",async (req, res) => {
+        const novi = new ScansPerDay({
+            date: new Date(new Date().toLocaleDateString()),
+            numberOfScans: Math.floor(Math.random() * 100) + 1
+        });
+        const k = await novi.save()
+        res.send({k})
+    })
 
     app.use('/auth', authRouter);
     app.use('/user', userRouter);

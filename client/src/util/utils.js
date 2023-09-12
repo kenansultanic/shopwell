@@ -13,11 +13,13 @@ export const copyObject = object => JSON.parse(JSON.stringify(object));
 export const compareRestrictions = (restrictions, arr2, type) => {
 
     let arr1 = [];
-    if (type === 'allergies')
+    if (type === 'allergy')
         arr1.push(...restrictions.allergies);
     else if (type === 'religious')
         arr1.push(...restrictions.religious);
     else arr1.push(...restrictions.intolerances);
+
+    //let arr1 = restrictions.filter(item => item.type === type);
 
     return JSON.stringify(arr1.sort()) === JSON.stringify(arr2.sort());
 }
@@ -25,17 +27,28 @@ export const compareRestrictions = (restrictions, arr2, type) => {
 export const searchFilter = (query, data) => {
     if (query === '') return data;
     return data.filter(element => {
-        return element.toLowerCase().startsWith(query.trim().toLowerCase())
-            || (query.length > 3 && leven(element, query) < 3);
+        return element.name.toLowerCase().startsWith(query.trim().toLowerCase())
+            || (query.length > 3 && leven(element.name, query) < 3);
     });
 };
 
 export const selectRestrictionByType = (restrictions, type) => {
-    if (type === 'allergies')
+    if (type === 'allergy')
         return restrictions.allergies;
     else if (type === 'religious')
         return restrictions.religious;
     return restrictions.intolerances;
+};
+
+export const checkForIngredientsWithAllergies = (ingredients, allergies) => {
+    if (!ingredients || !allergies)
+        return [];
+    return ingredients.filter(ingredient => {
+            return allergies.filter(item => {
+                return ingredient.includes(item)
+            }).length
+        }
+    );
 };
 
 export const parseResource = resource => {

@@ -11,27 +11,35 @@ export const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-        setMode: state => { state.mode = state.mode === 'light' ? 'dark' : 'light' },
+        updateMode: state => { state.mode = state.mode === 'light' ? 'dark' : 'light' },
         setUser: (state, action) => {
             state.user = action.payload.user
         },
+        updateUser: (state, action) => { state.user = action.payload.updated },
+        setRestrictions: (state, action) => { state.restrictions = action.payload.restrictions; },
         setCredentials: (state, action) => {
             state.user = action.payload.user;
         },
         setError: (state, action) => { state.error = action.payload.error; },
         appendNotifications: (state, action) => {
+            const index = state.notifications.findIndex(item => item._id === action.payload.newNotification._id);
+            if (index === -1)
                 state.notifications.push(action.payload.newNotification);
         },
         deleteNotifications: state => { state.notifications = []; },
         logout: state => {
             state.user = null;
+            state.notifications = [];
+            state.mode = 'light';
         }
     }
 });
 
-export const { setMode, setCredentials, logout, setUser, appendNotifications, deleteNotifications, setError } = authSlice.actions;
+export const { updateMode, setCredentials, logout, setUser, updateUser, setRestrictions, appendNotifications, deleteNotifications, setError } = authSlice.actions;
 
 export const selectCurrentUser = state => state.auth.user;
+
+export const selectRestrictions = state => state.auth.restrictions;
 
 export const selectCurrentAccessToken = state => state.accessToken;
 

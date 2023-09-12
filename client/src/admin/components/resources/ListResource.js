@@ -8,17 +8,21 @@ import {useDispatch, useSelector} from "react-redux";
 import {selectUsers, setUsers} from "../../../state/dataSlice";
 import {getUsers} from "../../actions/users";
 import {useSearchParams} from "react-router-dom";
-import {useParams} from "react-router";
+import {useNavigate, useParams} from "react-router";
 import {getListResourceSchema} from "../../common/schemas/list-resource-schema";
 import {deleteRequiredResources, getRequiredResources} from "../../common/functions";
 import {deleteResources, getResources} from "../../actions/resources";
+import {getNumberOfResources} from "../../../api/admin";
+import {parseResource} from "../../../util/utils";
 
 const ListResource = () => {
 
-    // TODO dodaj provjeru jel resource postoji
     const { resource } = useParams();
+    const navigate = useNavigate();
 
-    const resources = useSelector(state => state.data[resource]);
+    const parsedResource = parseResource(resource);
+
+    const resources = useSelector(state => state.data[parsedResource]);
     const dispatch = useDispatch();
 
     const renderAfterCalled = useRef(false);
@@ -27,6 +31,7 @@ const ListResource = () => {
 
     const [selectedRows, setSelectedRows] = useState([]);
     const [pageSize, setPageSize] = useState(5);
+    const [totalRows, setTotalRows] = useState(resources.length);
     const page = Number(searchParams.get('page')) - 1;
 
     const columnsSchema = getListResourceSchema(resource);
@@ -47,36 +52,47 @@ const ListResource = () => {
             .catch(error => console.error(error))
     };
 
-    /*useEffect(() => {
-        setTotalPages(Math.ceil(users.length / pageSize));
-    }, [users]);*/
+    const handleCreateNewButtonClick = () => navigate(`/admin/resources/${resource}/new`);
 
     useEffect(() => {
-        //TODO izbrisi try catch
-        try {
-            if (renderAfterCalled.current)
-                renderAfterCalled.current = false;
+        const getTotalRows = async () => {
+            try {
+                const response = await getNumberOfResources(resource);
 
-            else if (!resources.length /*|| Math.ceil(users.length / pageSize) < page*/) {
-                //setIsLoading(true);
-                dispatch(getResources(0, 11, resource))
-                    .then(response => {
-                        //totalPages =
-                        /*setTotalPages(response.total);
-                        setIsLoading(false);*/
-                    })
-                    .catch(error => {
-                        console.error(error.message);
-                    });
-                renderAfterCalled.current = true;
+                if (response.status === 200)
+                    setTotalRows(response.data.total);
+                else console.info("dodaj i warning")
+            }
+            catch (error) {
+
             }
         }
-        catch (error) {
-            console.error(error);
+        getTotalRows();
+        setSearchParams('page=1');
+    }, [resource]);
+
+
+    useEffect(() => {
+        if (renderAfterCalled.current)
+            renderAfterCalled.current = false;
+
+        else if (!resources.length || (totalRows > page * pageSize && resources.length < totalRows) /*Math.ceil(resources.length / pageSize) < page*/) {
+            //setIsLoading(true);
+            dispatch(getResources(page, pageSize, resource))
+                .then(response => {
+                    //totalPages =
+                    /*setTotalPages(response.total);
+                    setIsLoading(false);*/
+                })
+                .catch(error => {
+                    console.error(error.message);
+                });
+            renderAfterCalled.current = true;
         }
-    }, []);//[page]
+    }, [page, resource]);
 
     return (
+        ['users', 'products', 'restrictions', 'product-reviews'].includes(resource) ?
         <>
             <Box
                 sx={{
@@ -87,8 +103,8 @@ const ListResource = () => {
                 }}
             >
                 <Typography variant="h5" textTransform="capitalize">{ resource }</Typography>
-                <Box style={{ flexGrow: 1 }}/>
-                <Button variant="outlined" style={{ textTransform: 'none' }}>
+                <Box style={{ flexGrow: 1 }} />
+                <Button variant="outlined" style={{ textTransform: 'none' }} onClick={handleCreateNewButtonClick}>
                     <AddIcon fontSize="small" /> &nbsp; Create new
                 </Button>
                 <Button><FilterAltIcon fontSize="small" style={{ textTransform: 'none' }} /> &nbsp; Filter</Button>
@@ -139,20 +155,31 @@ const ListResource = () => {
                     columns={columnsSchema}
                     getRowId={row => row._id}
                     pagination
+                    re
                     //paginationMode="server"
-                    //rowCount={11}
+                    rowCount={totalRows}
                     //loading={isLoading}
-                    //totalPages={totalPages}
+                    //totalPages={3}
                     pageSizeOptions={[5, 10, 20]}
                     paginationModel={{ pageSize, page }}
                     onPaginationModelChange={handlePaginationModelChange}
-                    onRowDoubleClick={row=>{console.log(row.id)}}
+                    onRowDoubleClick={row => navigate(`/admin/resources/${resource}/show/${row.id}`)}
                     checkboxSelection
                     onRowSelectionModelChange={s => setSelectedRows(s)}
-                    sx={{ p: { sm: 1, md: 2, lg: 3 } }}
+                    sx={{
+                        p: { sm: 1, md: 2, lg: 3 },
+                        fontSize: '4rem',
+                        ...{ bgcolor: theme => theme.palette.mode === 'dark' ? theme.palette.grey[900] : undefined },
+                        '.MuiDataGrid-columnHeaders': {
+                            bgcolor: 'inherit'
+                        },
+                        '.MuiDataGrid-footerContainer': {
+                            fontSize: '1.1rem'
+                        }
+                    }}
                 />
             </Box>
-        </>
+        </> : <Box display="flex" justifyContent="center"><Typography>You cant list selected resource</Typography></Box>
     );
 };
 

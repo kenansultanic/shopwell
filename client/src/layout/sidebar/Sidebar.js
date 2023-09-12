@@ -5,7 +5,6 @@ import 'react-perfect-scrollbar/dist/css/styles.css';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { BrowserView, MobileView } from 'react-device-detect';
 import {useTheme} from "@mui/material/styles";
-import MenuCard from "./menu-card/MenuCard";
 import MenuList from "./menu-list/MenuList";
 import Logo from "../../common/components/Logo";
 
@@ -14,8 +13,6 @@ const Sidebar = ({ drawerOpen, drawerToggle }) => {
 
     const theme = useTheme();
     const matchUpMd = useMediaQuery(theme.breakpoints.up('md'));
-
-    //console.info(theme.breakpoints.up('md'), matchUpMd)
 
     return (
         <Box component="nav"
@@ -58,13 +55,11 @@ const Sidebar = ({ drawerOpen, drawerToggle }) => {
                         }}
                     >
                         <MenuList />
-                        <MenuCard />
-                    </PerfectScrollbar>
++                    </PerfectScrollbar>
                 </BrowserView>
                 <MobileView>
                     <Box sx={{ px: 2 }}>
                         <MenuList />
-                        <MenuCard />
                     </Box>
                 </MobileView>
             </Drawer>

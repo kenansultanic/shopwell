@@ -1,19 +1,15 @@
 
-const userSchema = [
-    //{ field: '_id', headerName: 'ID', type: 'string' },
-    { field: 'firstName', headerName: 'First Name', type: 'string', required: true },
-    { field: 'lastName', headerName: 'Last Name', type: 'string', required: true },
-    { field: 'image', headerName: 'Image', type: 'file', required: true, value: null },
-    { field: 'email', headerName: 'Email', type: 'string', required: true, multiline: true },
-    { field: 'ingredients', headerName: 'Ingredients', type: 'multiple-string', required: true},
-    { field: 'restriction', headerName: 'Restriction', type: 'enum', required: true,
-        options: [
-            { value: 'allergy', label: 'Allergy' },
-            { value: 'religious', label: 'Religious' },
-            { value: 'intolerance', label: 'Intolerance' },
-        ]
-    }
-    //{ field: 'extraEmails', headerName: 'Extra emails', type: 'bool' },
+
+const productSchema = [
+    { field: 'code', headerName: 'Code', type: 'string' },
+    { field: 'name', headerName: 'Name', type: 'string' },
+    { field: 'calories', headerName: 'Calories', type: 'string' },
+    { field: 'imageURL', headerName: 'Image', type: 'image' },
+    { field: 'ingredients', headerName: 'Ingredients', type: 'multiple-string'},
+    { field: 'categories', headerName: 'Categories', type: 'multiple-string'},
+    { field: 'notSuitedForIntolerances', headerName: 'Not Suited for Intolerances', type: 'multiple-string'},
+    { field: 'religiousRestrictions', headerName: 'Religious restrictions', type: 'multiple-string'},
+    { field: 'nutritionalValuePer100grams', headerName: 'Nutritional value per 100g', type: 'multiple-string'},
 ];
 
 const restrictionSchema = [
@@ -29,8 +25,8 @@ const restrictionSchema = [
 
 export const getNewResourceSchema = resource => {
     switch (resource) {
-        case 'users':
-            return userSchema;
+        case 'products':
+            return productSchema;
         case 'restrictions':
             return restrictionSchema;
         default:

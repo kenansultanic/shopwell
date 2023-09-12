@@ -12,7 +12,7 @@ export interface UserDocument extends mongoose.Document {
         allergies: string[],
         religious: string[],
         intolerances: string[]
-    }
+    },
 };
 
 const UserSchema = new mongoose.Schema({
@@ -61,20 +61,22 @@ const UserSchema = new mongoose.Schema({
     }
 });
 
-UserSchema.pre<UserDocument>('save', async function (next) {
+UserSchema.pre<UserDocument>('save', function (next) {
 
     const user = this;
 
-    // Only hash the password if it has been modified (or is new)
     if (!user.isModified('password'))
         return next();
 
-    const salt = await bcrypt.genSalt();
-
-    bcrypt.hash(user.password, salt, (err, hash) => {
-        if (err) return next(err);
-        user.password = hash;
-        next();
+    bcrypt.genSalt(10, (err, salt) =>{
+        if (err)
+            return next(err);
+        bcrypt.hash(user.password, salt, (error, hash) => {
+            if (error)
+                return next(err);
+            user.password = hash;
+            next();
+        });
     });
 });
 
