@@ -24,7 +24,12 @@ import List from "@mui/material/List";
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import {io} from "socket.io-client";
 import {useDispatch, useSelector} from "react-redux";
-import {appendNotifications, deleteNotifications, selectNotifications} from "../../../state/authSlice";
+import {
+    appendNotifications,
+    deleteNotifications,
+    selectNotifications,
+    setNotificationStatusToRead
+} from "../../../state/authSlice";
 import {timePassed} from "../../../util/utils";
 import Badge from "@mui/material/Badge";
 
@@ -47,29 +52,21 @@ const NotificationSection = () => {
     const dispatch = useDispatch();
 
     const anchorRef = useRef(null);
-    const renderAfterCalled = useRef(false);
 
     const [open, setOpen] = useState(false);
-    const [unseenNotifications, setUnseenNotifications] = useState(0);
+    const unseenNotifications = notifications.reduce((total, item) => total + Number(!item.isRead), 0);
 
     const handleClose = () => setOpen(false);
+
     const handleToggle = () => {
         setOpen(!open);
-        setUnseenNotifications(0);
-    }
+        dispatch(setNotificationStatusToRead());
+    };
 
     useEffect(() => {
-        if (renderAfterCalled) {
-            renderAfterCalled.current = false;
-        }
         socket.on('receive_notification', data => {
-            dispatch(appendNotifications({ ...data }));
-
-            if (!open)
-                setUnseenNotifications(prevState => prevState + 1);
-            renderAfterCalled.current = true;
+            dispatch(appendNotifications({ ...data, isRead: open }));
         });
-
     }, [socket]);
 
     return (
@@ -80,30 +77,30 @@ const NotificationSection = () => {
                     mr: 2.5
                 }}
             >
-                <Badge badgeContent={unseenNotifications} max={99} color="error">
-                <ButtonBase sx={{ borderRadius: 2.5 }}>
-                    <Avatar
-                        variant="rounded"
-                        sx={{
-                            transition: 'all .2s ease-in-out',
-                            bgcolor: 'secondary.light',
-                            color: 'secondary.dark',
-                            borderRadius: 2.5,
-                            width: '34px',
-                            height: '34px',
-                            '&[aria-controls="menu-list-grow"],&:hover': {
-                                bgcolor: 'secondary.dark',
-                                color: 'secondary.light'
-                            }
-                        }}
-                        ref={anchorRef}
-                        aria-controls={open ? 'menu-list-grow' : undefined}
-                        aria-haspopup="true"
-                        onClick={handleToggle}
-                    >
-                        <NotificationsIcon />
-                    </Avatar>
-                </ButtonBase>
+                <Badge badgeContent={unseenNotifications || 0} max={99} color="error">
+                    <ButtonBase sx={{ borderRadius: 2.5 }}>
+                        <Avatar
+                            variant="rounded"
+                            sx={{
+                                transition: 'all .2s ease-in-out',
+                                bgcolor: 'secondary.light',
+                                color: 'secondary.dark',
+                                borderRadius: 2.5,
+                                width: '34px',
+                                height: '34px',
+                                '&[aria-controls="menu-list-grow"],&:hover': {
+                                    bgcolor: 'secondary.dark',
+                                    color: 'secondary.light'
+                                }
+                            }}
+                            ref={anchorRef}
+                            aria-controls={open ? 'menu-list-grow' : undefined}
+                            aria-haspopup="true"
+                            onClick={handleToggle}
+                        >
+                            <NotificationsIcon />
+                        </Avatar>
+                    </ButtonBase>
                 </Badge>
             </Box>
             <Popper
@@ -170,53 +167,53 @@ const NotificationSection = () => {
                                                         }
                                                     }}
                                                 >
-                                                {
-                                                    notifications.length === 0 ? (
-                                                        <ListItemWrapper>
-                                                            <ListItem alignItems="center">
-                                                                <ListItemText primary={
-                                                                    <Typography variant="subtitle1">
-                                                                        You have no notifications
-                                                                </Typography>
-                                                                } />
-                                                            </ListItem>
-                                                        </ListItemWrapper>
-                                                    ) : (
-                                                        notifications.map(({ tag, content, createdAt, _id }) => (
-                                                            <Box key={_id}>
+                                                    {
+                                                        notifications.length === 0 ? (
                                                             <ListItemWrapper>
                                                                 <ListItem alignItems="center">
-                                                                    <ListItemAvatar>
-                                                                        <Avatar alt="Admin" />
-                                                                    </ListItemAvatar>
                                                                     <ListItemText primary={
                                                                         <Typography variant="subtitle1">
-                                                                            Administrator
+                                                                            You have no notifications
                                                                         </Typography>
                                                                     } />
-                                                                    <ListItemSecondaryAction>
-                                                                        <Grid container justifyContent="flex-end">
-                                                                            <Grid item xs={12}>
-                                                                                <Typography variant="caption" display="block" gutterBottom>
-                                                                                    { timePassed(new Date(createdAt)) }
+                                                                </ListItem>
+                                                            </ListItemWrapper>
+                                                        ) : (
+                                                            notifications.map(({ tag, content, createdAt, _id }) => (
+                                                                <Box key={_id}>
+                                                                    <ListItemWrapper>
+                                                                        <ListItem alignItems="center">
+                                                                            <ListItemAvatar>
+                                                                                <Avatar alt="Admin" />
+                                                                            </ListItemAvatar>
+                                                                            <ListItemText primary={
+                                                                                <Typography variant="subtitle1">
+                                                                                    Administrator
+                                                                                </Typography>
+                                                                            } />
+                                                                            <ListItemSecondaryAction>
+                                                                                <Grid container justifyContent="flex-end">
+                                                                                    <Grid item xs={12}>
+                                                                                        <Typography variant="caption" display="block" gutterBottom>
+                                                                                            { timePassed(new Date(createdAt)) }
+                                                                                        </Typography>
+                                                                                    </Grid>
+                                                                                </Grid>
+                                                                            </ListItemSecondaryAction>
+                                                                        </ListItem>
+                                                                        <Grid container direction="column" className="list-container">
+                                                                            <Grid item xs={12} sx={{ pb: 2 }}>
+                                                                                <Typography variant="subtitle2">
+                                                                                    { content }
                                                                                 </Typography>
                                                                             </Grid>
                                                                         </Grid>
-                                                                    </ListItemSecondaryAction>
-                                                                </ListItem>
-                                                                <Grid container direction="column" className="list-container">
-                                                                    <Grid item xs={12} sx={{ pb: 2 }}>
-                                                                        <Typography variant="subtitle2">
-                                                                            { content }
-                                                                        </Typography>
-                                                                    </Grid>
-                                                                </Grid>
-                                                            </ListItemWrapper>
-                                                            <Divider />
-                                                            </Box>
-                                                        ))
-                                                    )
-                                                }
+                                                                    </ListItemWrapper>
+                                                                    <Divider />
+                                                                </Box>
+                                                            ))
+                                                        )
+                                                    }
                                                 </List>
                                             </PerfectScrollbar>
                                         </Grid>

@@ -5,15 +5,12 @@ import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import { DataGrid } from '@mui/x-data-grid';
 import {useEffect, useRef, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
-import {selectUsers, setUsers} from "../../../state/dataSlice";
-import {getUsers} from "../../actions/users";
 import {useSearchParams} from "react-router-dom";
 import {useNavigate, useParams} from "react-router";
-import {getListResourceSchema} from "../../common/schemas/list-resource-schema";
-import {deleteRequiredResources, getRequiredResources} from "../../common/functions";
-import {deleteResources, getResources} from "../../actions/resources";
-import {getNumberOfResources} from "../../../api/admin";
-import {parseResource} from "../../../util/utils";
+import {getListResourceSchema} from "../common/schemas/list-resource-schema";
+import {deleteResources, getResources} from "../actions/resources";
+import {getNumberOfResources} from "../../api/admin";
+import {parseResource} from "../../util/utils";
 
 const ListResource = () => {
 
@@ -35,7 +32,6 @@ const ListResource = () => {
     const page = Number(searchParams.get('page')) - 1;
 
     const columnsSchema = getListResourceSchema(resource);
-    //const getResources = getRequiredResources(resource);
 
     const handlePaginationModelChange = model => {
         if (model.pageSize !== pageSize) {
@@ -77,12 +73,9 @@ const ListResource = () => {
             renderAfterCalled.current = false;
 
         else if (!resources.length || (totalRows > page * pageSize && resources.length < totalRows) /*Math.ceil(resources.length / pageSize) < page*/) {
-            //setIsLoading(true);
             dispatch(getResources(page, pageSize, resource))
                 .then(response => {
-                    //totalPages =
-                    /*setTotalPages(response.total);
-                    setIsLoading(false);*/
+
                 })
                 .catch(error => {
                     console.error(error.message);
@@ -155,11 +148,7 @@ const ListResource = () => {
                     columns={columnsSchema}
                     getRowId={row => row._id}
                     pagination
-                    re
-                    //paginationMode="server"
                     rowCount={totalRows}
-                    //loading={isLoading}
-                    //totalPages={3}
                     pageSizeOptions={[5, 10, 20]}
                     paginationModel={{ pageSize, page }}
                     onPaginationModelChange={handlePaginationModelChange}

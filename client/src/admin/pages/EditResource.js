@@ -1,19 +1,19 @@
 import Paper from "@mui/material/Paper";
 import {useFormik} from "formik";
-import {getValidationSchema} from "../../common/schemas/formik-schema";
+import {getValidationSchema} from "../common/schemas/formik-schema";
 import {useParams} from "react-router";
-import {getNewResourceSchema} from "../../common/schemas/new-resource-schema";
-import StyledTextField from "../common/StyledTextField";
+import {getNewResourceSchema} from "../common/schemas/new-resource-schema";
+import StyledTextField from "../components/common/StyledTextField";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import {Box, CircularProgress, MenuItem, Typography} from "@mui/material";
 import { MuiFileInput } from "mui-file-input";
 import {useEffect, useState} from "react";
-import HandleResource from "./HandleResource";
-import {editResource, getResource} from "../../actions/resources";
+import HandleResource from "../components/resources/HandleResource";
+import {editResource, getResource} from "../actions/resources";
 import {useDispatch, useSelector} from "react-redux";
-import {copyObject, parseResource} from "../../../util/utils";
-import {getRequiredResourceByID} from "../../common/functions";
+import {copyObject, parseResource} from "../../util/utils";
+import {getRequiredResourceByID} from "../common/functions";
 const EditResource = () => {
 
     const { resource, id } = useParams();

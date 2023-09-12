@@ -4,11 +4,12 @@ import Typography from "@mui/material/Typography";
 const Chart = ({ scansPerDay }) => {
 
     const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
-    const data = scansPerDay?.map(({ date, numberOfScans }) => {
+    const arrCopy = [...(scansPerDay ?? [])].reverse();
+    const data = arrCopy?.map(({ date, numberOfScans }) => {
+        if (!weekdays[new Date(date).getDay()-1]) console.log(new Date(date).getDay())
         return {
             numberOfScans,
-            day: weekdays[new Date(date).getDay()]
+            day: weekdays[new Date(date).getDay()-1] ?? 'Sunday'
         }
     });
 

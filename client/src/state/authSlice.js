@@ -4,7 +4,8 @@ const initialState = {
     mode: 'light',
     user: null,
     error: null,
-    notifications: []
+    notifications: [],
+    numberOfUnreadNotifications: 0
 };
 
 export const authSlice = createSlice({
@@ -24,7 +25,12 @@ export const authSlice = createSlice({
         appendNotifications: (state, action) => {
             const index = state.notifications.findIndex(item => item._id === action.payload.newNotification._id);
             if (index === -1)
-                state.notifications.push(action.payload.newNotification);
+                state.notifications.unshift({ ...action.payload.newNotification, isRead: action.payload.isRead });
+        },
+        setNotificationStatusToRead: state => {
+            state.notifications.forEach((value, index, array) => {
+                array[index] = { ...value, isRead: true };
+            });
         },
         deleteNotifications: state => { state.notifications = []; },
         logout: state => {
@@ -35,7 +41,18 @@ export const authSlice = createSlice({
     }
 });
 
-export const { updateMode, setCredentials, logout, setUser, updateUser, setRestrictions, appendNotifications, deleteNotifications, setError } = authSlice.actions;
+export const {
+    updateMode,
+    setCredentials,
+    logout,
+    setUser,
+    updateUser,
+    setRestrictions,
+    appendNotifications,
+    setNotificationStatusToRead,
+    deleteNotifications,
+    setError
+} = authSlice.actions;
 
 export const selectCurrentUser = state => state.auth.user;
 

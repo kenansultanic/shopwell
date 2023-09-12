@@ -11,7 +11,6 @@ import {
     DialogActions, FormGroup, InputAdornment, OutlinedInput, Collapse, RadioGroup, Radio, FormLabel
 } from "@mui/material";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import {useNavigate} from "react-router";
 import {useEffect, useReducer, useRef, useState} from "react";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Button from "@mui/material/Button";
@@ -21,7 +20,6 @@ import {compareRestrictions, searchFilter, selectRestrictionByType} from "../../
 import PerfectScrollbar from "react-perfect-scrollbar";
 import {useDispatch, useSelector} from "react-redux";
 import {selectCurrentUser, selectRestrictions, setUser} from "../../../state/authSlice";
-import {axiosClient} from "../../../api/AxiosClient";
 import MosqueIcon from '@mui/icons-material/Mosque';
 import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 import DoNotDisturbAltIcon from '@mui/icons-material/DoNotDisturbAlt';
@@ -43,17 +41,6 @@ export const StyledListItemIcon = styled(ListItemIcon)(({ theme }) => ({
     marginLeft: '16px',
     marginRight: '36px'
 }));
-
-const listItemIconStyle = {
-    p: .5,
-    minWidth: '0 !important',
-    bgcolor: 'primary.light',
-    borderRadius: '50%',
-};
-
-const StyledListItem = styled(ListItem)(() => ({ padding: '12px', gap: '10%', borderRadius: '10px' }));
-
-const StyledListSubItemIcon = styled(ListItemIcon)(() => ({ marginRight: 1, minWidth: '5px' }));
 
 const CustomDialog = ({ open, handleClose, type, data }) => {
 

@@ -1,21 +1,21 @@
 import Paper from "@mui/material/Paper";
 import {useFormik} from "formik";
-import {getValidationSchema} from "../../common/schemas/formik-schema";
+import {getValidationSchema} from "../common/schemas/formik-schema";
 import {useParams} from "react-router";
-import {getNewResourceSchema} from "../../common/schemas/new-resource-schema";
-import StyledTextField from "../common/StyledTextField";
+import {getNewResourceSchema} from "../common/schemas/new-resource-schema";
+import StyledTextField from "../components/common/StyledTextField";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import {Box, CircularProgress, MenuItem, Typography} from "@mui/material";
 import { MuiFileInput } from "mui-file-input";
 import {useEffect, useState} from "react";
-import { saveResource } from "../../actions/resources";
-import CustomResourceTextField from "../common/CustomResourceTextField";
+import { saveResource } from "../actions/resources";
+import CustomResourceTextField from "../components/common/CustomResourceTextField";
 import AddIcon from "@mui/icons-material/Add";
 import {useDispatch, useSelector} from "react-redux";
-import {getRequiredResourceByID} from "../../common/functions";
-import {parseResource} from "../../../util/utils";
-import HandleResource from "./HandleResource";
+import {getRequiredResourceByID} from "../common/functions";
+import {parseResource} from "../../util/utils";
+import HandleResource from "../components/resources/HandleResource";
 /*
 *
 * <MuiFileInput required fullWidth size="small" margin="normal" id={item.field}
