@@ -61,7 +61,7 @@ const Overview = () => {
     const badIngredients = user ? checkForIngredientsWithAllergies(ingredientsList, user?.dietaryRestrictions.allergies) : [];
 
     useEffect(() => {
-        if (!product) {
+        if (Object.keys(product).length === 0) {
             dispatch(getProduct(code))
                 .then(response => {
                     console.info(response)

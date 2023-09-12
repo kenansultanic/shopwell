@@ -46,9 +46,9 @@ const initializeServer = () => {
         credentials: true
     }));
 
-    app.get('/', async (req, res)=>res.status(201).json({some: await hashPassword('Admin123')}))
+    //app.get('/', async (req, res)=>res.status(201).json({some: await hashPassword('Admin123')}))
 
-    app.get("/test", async (req, res) => {
+    /*app.get("/test", async (req, res) => {
         let s: any = []
         for (let i = 1; i < 7; i++) {
             const novi = new ScansPerDay({
@@ -68,7 +68,7 @@ const initializeServer = () => {
         });
         const k = await novi.save()
         res.send({k})
-    })
+    })*/
 
     app.use('/auth', authRouter);
     app.use('/user', userRouter);

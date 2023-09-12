@@ -28,7 +28,7 @@ const RecentActivity = ({ recentActivity }) => {
                             <TableCell>{ timePassed(row.timestampOfAction) }</TableCell>
                             <TableCell>{ row.actionType }</TableCell>
                             <TableCell>{ row.collectionName }</TableCell>
-                            <TableCell>{ row.fullDocument._id }</TableCell>
+                            <TableCell>{ row.fullDocument?._id }</TableCell>
                             <TableCell align="right">{ row._id }</TableCell>
                         </TableRow>
                     ))}

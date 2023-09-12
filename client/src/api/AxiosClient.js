@@ -37,7 +37,6 @@ axiosClient.interceptors.response.use(
                     }
                 })
                 .catch(error => {
-                    //TODO(izbrisi sve iz lokalne memorije i odloguj korisnika) proslijedi history??
                     console.error(error)
                 });
         }
