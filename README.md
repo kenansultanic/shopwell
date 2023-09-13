@@ -6,7 +6,9 @@ A Web app that allows users to scan product barcodes and displays useful info ab
 
 The web application was built using MERN stack technologies; i.e., React, Node, Express and MongoDB.
 
-![mern stack](https://drive.google.com/uc?id=17Nd3A9ItvA-bIsaxaKlOV2Nt9u_b3l0V)
+<img src="https://drive.google.com/uc?id=17Nd3A9ItvA-bIsaxaKlOV2Nt9u_b3l0V" alt="mern stack" width="500" />
+
+<br>
 
 ### Frontend
 
@@ -24,9 +26,9 @@ The React app utilizes various different frontend libraries, such as:
 
 * Socket.io for notifications inside the website
 
-<br>
+<br />
 
-![frontend](https://drive.google.com/uc?id=1PNK6TV_3L25f6JYCCPf2yLpmS0wtv44Q)
+<img src="https://drive.google.com/uc?id=1PNK6TV_3L25f6JYCCPf2yLpmS0wtv44Q" alt="frontend" width="500" />
 
 ### Backend
 
@@ -44,9 +46,9 @@ A Node Express Server writtend in TypeScript, uses the following technologies:
 
 * Cloudinray for image uploading
 
-<br>
+<br />
 
-![backend](https://drive.google.com/uc?id=12PwxEUyoCoYE6vyKmU9rmZa8NTquVtvM)
+<img src="https://drive.google.com/uc?id=12PwxEUyoCoYE6vyKmU9rmZa8NTquVtvM" alt="backend" width="500" />
 
 ### Database
 
@@ -68,6 +70,6 @@ The project uses a Cloud based database, hosted on MongoDB Atlas. The database h
 
 The database also hosts a few triggers that are called after newly performed CRUD operations on the Users and Products collections. These triggers keep track of new activities that are saved in the Activities collection.
 
-![database](https://drive.google.com/uc?id=1IpF9iNwvrL3Q1S8mIcvwAEDATEXV-h1L)
+<img src="https://drive.google.com/uc?id=1IpF9iNwvrL3Q1S8mIcvwAEDATEXV-h1L" alt="database" width="500" />
 
 ## Scripts
